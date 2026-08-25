@@ -33,6 +33,12 @@
   &__image {
     position: relative;
     aspect-ratio: 1 / 1;
+    // Sin esto, el navegador ignora el aspect-ratio en algunos casos: un
+    // flex item con aspect-ratio "crece" igual hasta el alto natural de su
+    // contenido (la foto) si ese contenido es más alto que ancho. overflow
+    // hidden fuerza el alto-mínimo a 0 y hace que el cuadrado se respete
+    // siempre, sin importar la proporción original de cada foto.
+    overflow: hidden;
     background: var(--color-bg);
     display: flex;
     align-items: center;
@@ -41,6 +47,7 @@
     img {
       width: 100%;
       height: 100%;
+      box-sizing: border-box;
       object-fit: contain;
       padding: 0.85rem;
     }
@@ -157,9 +164,9 @@
     font-weight: 600;
     color: var(--color-text);
     line-height: 1.35;
-    min-height: calc(1.35em * 2);
+    min-height: calc(1.35em * 3);
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
