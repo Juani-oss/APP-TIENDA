@@ -17,6 +17,15 @@ export class ConfiguracionService {
     () => this.config()?.envio_casillero_habilitado ?? false
   );
 
+  /** null si el banner está apagado o no tiene imagen cargada todavía. */
+  readonly bannerPromo = computed(() => {
+    const c = this.config();
+    if (!c?.banner_promo_activo || !c.banner_promo_url) {
+      return null;
+    }
+    return { url: c.banner_promo_url, enlace: c.banner_promo_enlace };
+  });
+
   cargar(): Observable<Configuracion> {
     return supabaseObservable<Configuracion>(
       this.supabase.from(this.tabla).select('*').eq('id', 1).single()

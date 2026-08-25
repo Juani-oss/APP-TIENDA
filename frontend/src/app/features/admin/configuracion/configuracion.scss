@@ -103,6 +103,18 @@
     line-height: 1.5;
   }
 
+  &__banner-preview {
+    max-width: 26rem;
+
+    img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+  }
+
   &__grid3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthService, FactorMfa } from '../../../core/services/auth.service';
 import { ConfiguracionService } from '../../../core/services/configuracion.service';
+import { UploadService } from '../../../core/services/upload.service';
+import { resolverImagenUrl } from '../../../core/utils/imagen-url';
 import { esUrlValida } from '../../../core/utils/validar-url';
 
 interface FormCasillero {
@@ -37,6 +39,18 @@ const REDES_VACIO: FormRedes = {
   facebook_url: '',
 };
 
+interface FormBanner {
+  banner_promo_activo: boolean;
+  banner_promo_url: string;
+  banner_promo_enlace: string;
+}
+
+const BANNER_VACIO: FormBanner = {
+  banner_promo_activo: false,
+  banner_promo_url: '',
+  banner_promo_enlace: '',
+};
+
 @Component({
   selector: 'app-admin-configuracion',
   imports: [FormsModule],
@@ -46,6 +60,8 @@ const REDES_VACIO: FormRedes = {
 export class AdminConfiguracion implements OnInit {
   protected readonly configuracion = inject(ConfiguracionService);
   private readonly auth = inject(AuthService);
+  private readonly uploadService = inject(UploadService);
+  protected readonly resolverImagenUrl = resolverImagenUrl;
 
   readonly cargando = signal(true);
   readonly guardando = signal(false);
@@ -57,6 +73,11 @@ export class AdminConfiguracion implements OnInit {
   readonly formRedes = signal<FormRedes>({ ...REDES_VACIO });
   readonly guardandoRedes = signal(false);
   readonly redesGuardadas = signal(false);
+
+  readonly formBanner = signal<FormBanner>({ ...BANNER_VACIO });
+  readonly subiendoBanner = signal(false);
+  readonly guardandoBanner = signal(false);
+  readonly bannerGuardado = signal(false);
 
   // ---------- 2FA ----------
   readonly mfaFactores = signal<FactorMfa[]>([]);
@@ -89,6 +110,11 @@ export class AdminConfiguracion implements OnInit {
         this.formRedes.set({
           instagram_url: c.instagram_url ?? '',
           facebook_url: c.facebook_url ?? '',
+        });
+        this.formBanner.set({
+          banner_promo_activo: c.banner_promo_activo,
+          banner_promo_url: c.banner_promo_url ?? '',
+          banner_promo_enlace: c.banner_promo_enlace ?? '',
         });
         this.cargando.set(false);
       },
@@ -145,6 +171,61 @@ export class AdminConfiguracion implements OnInit {
         error: () => {
           this.guardandoRedes.set(false);
           this.error.set('No se pudieron guardar las redes sociales. Intentá de nuevo.');
+        },
+      });
+  }
+
+  actualizarCampoBanner<K extends keyof FormBanner>(campo: K, valor: FormBanner[K]): void {
+    this.formBanner.update((actual) => ({ ...actual, [campo]: valor }));
+  }
+
+  onArchivoBannerSeleccionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    if (!archivo) {
+      return;
+    }
+
+    this.subiendoBanner.set(true);
+    this.error.set(null);
+
+    this.uploadService.subirImagen(archivo).subscribe({
+      next: (res) => {
+        this.actualizarCampoBanner('banner_promo_url', res.url);
+        this.subiendoBanner.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo subir la imagen del banner (formato o tamaño no permitido, máx. 5MB).');
+        this.subiendoBanner.set(false);
+      },
+    });
+  }
+
+  guardarBanner(): void {
+    const datos = this.formBanner();
+    if (!esUrlValida(datos.banner_promo_enlace)) {
+      this.error.set('El link del banner tiene que ser una URL válida (http:// o https://).');
+      return;
+    }
+
+    this.guardandoBanner.set(true);
+    this.error.set(null);
+
+    this.configuracion
+      .actualizar({
+        banner_promo_activo: datos.banner_promo_activo,
+        banner_promo_url: datos.banner_promo_url.trim() || null,
+        banner_promo_enlace: datos.banner_promo_enlace.trim() || null,
+      })
+      .subscribe({
+        next: () => {
+          this.guardandoBanner.set(false);
+          this.bannerGuardado.set(true);
+          setTimeout(() => this.bannerGuardado.set(false), 2500);
+        },
+        error: () => {
+          this.guardandoBanner.set(false);
+          this.error.set('No se pudo guardar el banner. Intentá de nuevo.');
         },
       });
   }

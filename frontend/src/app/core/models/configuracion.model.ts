@@ -10,4 +10,7 @@ export interface Configuracion {
   casillero_notas: string | null;
   instagram_url: string | null;
   facebook_url: string | null;
+  banner_promo_activo: boolean;
+  banner_promo_url: string | null;
+  banner_promo_enlace: string | null;
 }

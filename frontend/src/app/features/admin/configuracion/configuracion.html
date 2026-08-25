@@ -270,6 +270,66 @@
       </button>
     </div>
 
+    <div class="configuracion__seccion">
+      <h2>Banner de promoción</h2>
+      <p class="configuracion__seccion-hint">
+        Aparece como una diapositiva más en el carrusel de "Productos Importados de
+        Tendencia" del inicio. Subí la imagen ya diseñada (con el texto y precio incluidos,
+        si querés) y opcionalmente un link a donde lleve al hacer clic.
+      </p>
+
+      <label>
+        Imagen del banner
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" (change)="onArchivoBannerSeleccionado($event)" />
+      </label>
+
+      @if (subiendoBanner()) {
+        <p class="configuracion__seccion-hint">Subiendo imagen...</p>
+      }
+
+      @if (formBanner().banner_promo_url) {
+        <div class="configuracion__banner-preview">
+          <img [src]="resolverImagenUrl(formBanner().banner_promo_url)" alt="Vista previa del banner" />
+        </div>
+      }
+
+      <label>
+        Link al hacer clic (opcional)
+        <input
+          type="url"
+          placeholder="https://wa.me/593985247692 o https://romvalst.netlify.app/categorias/3"
+          [ngModel]="formBanner().banner_promo_enlace"
+          (ngModelChange)="actualizarCampoBanner('banner_promo_enlace', $event)"
+          name="banner_promo_enlace"
+        />
+      </label>
+
+      <label class="configuracion__check-row">
+        <input
+          type="checkbox"
+          [ngModel]="formBanner().banner_promo_activo"
+          (ngModelChange)="actualizarCampoBanner('banner_promo_activo', $event)"
+          name="banner_promo_activo"
+        />
+        Mostrar este banner en la tienda
+      </label>
+
+      <button
+        type="button"
+        class="configuracion__btn-guardar"
+        [disabled]="guardandoBanner() || subiendoBanner()"
+        (click)="guardarBanner()"
+      >
+        @if (guardandoBanner()) {
+          Guardando...
+        } @else if (bannerGuardado()) {
+          ✓ Guardado
+        } @else {
+          Guardar banner
+        }
+      </button>
+    </div>
+
     @if (error()) {
       <p class="configuracion__error">{{ error() }}</p>
     }

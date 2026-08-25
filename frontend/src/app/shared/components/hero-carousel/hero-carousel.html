@@ -3,39 +3,51 @@
     <div class="hero-carousel__blob hero-carousel__blob--1" aria-hidden="true"></div>
     <div class="hero-carousel__blob hero-carousel__blob--2" aria-hidden="true"></div>
 
-    @if (productos().length > 0) {
+    @if (slides().length > 0) {
       <div class="hero-carousel__track" [style.transform]="'translateX(-' + actual() * 100 + '%)'">
-        @for (producto of productos(); track producto.id) {
-          <div class="hero-carousel__slide">
-            <div class="hero-carousel__copy">
-              <span class="hero-carousel__kicker">🔥 Destacado en {{ producto.categoria.nombre }}</span>
-              <h2 class="hero-carousel__titulo">Productos Importados de Tendencia</h2>
-              <p class="hero-carousel__sub">
-                Seleccionados por popularidad, traídos directo de las mejores tiendas del
-                mundo.
-              </p>
-              <a class="hero-carousel__cta" [routerLink]="['/productos', producto.id]">
-                Comprar Ahora
-                <svg class="hero-carousel__cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
+        @for (slide of slides(); track trackSlide(slide)) {
+          @if (slide.tipo === 'banner') {
+            <div class="hero-carousel__slide hero-carousel__slide--banner">
+              @if (slide.enlace) {
+                <a class="hero-carousel__banner-link" [href]="slide.enlace" target="_blank" rel="noopener">
+                  <img [src]="resolverImagenUrl(slide.url)" alt="Promoción" />
+                </a>
+              } @else {
+                <img class="hero-carousel__banner-img" [src]="resolverImagenUrl(slide.url)" alt="Promoción" />
+              }
+            </div>
+          } @else {
+            <div class="hero-carousel__slide">
+              <div class="hero-carousel__copy">
+                <span class="hero-carousel__kicker">🔥 Destacado en {{ slide.producto.categoria.nombre }}</span>
+                <h2 class="hero-carousel__titulo">Productos Importados de Tendencia</h2>
+                <p class="hero-carousel__sub">
+                  Seleccionados por popularidad, traídos directo de las mejores tiendas del
+                  mundo.
+                </p>
+                <a class="hero-carousel__cta" [routerLink]="['/productos', slide.producto.id]">
+                  Comprar Ahora
+                  <svg class="hero-carousel__cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+
+              <a class="hero-carousel__foto" [routerLink]="['/productos', slide.producto.id]">
+                <div class="hero-carousel__foto-marco">
+                  @if (slide.producto.imagen_url) {
+                    <img [src]="resolverImagenUrl(slide.producto.imagen_url)" [alt]="slide.producto.nombre" />
+                  } @else {
+                    <span class="hero-carousel__foto-vacia" aria-hidden="true">🛍️</span>
+                  }
+                </div>
+                <div class="hero-carousel__precio-tag">
+                  <span class="hero-carousel__precio-nombre">{{ slide.producto.nombre }}</span>
+                  <span class="hero-carousel__precio-valor">{{ slide.producto.precio | number: '1.2-2' }} USD</span>
+                </div>
               </a>
             </div>
-
-            <a class="hero-carousel__foto" [routerLink]="['/productos', producto.id]">
-              <div class="hero-carousel__foto-marco">
-                @if (producto.imagen_url) {
-                  <img [src]="resolverImagenUrl(producto.imagen_url)" [alt]="producto.nombre" />
-                } @else {
-                  <span class="hero-carousel__foto-vacia" aria-hidden="true">🛍️</span>
-                }
-              </div>
-              <div class="hero-carousel__precio-tag">
-                <span class="hero-carousel__precio-nombre">{{ producto.nombre }}</span>
-                <span class="hero-carousel__precio-valor">{{ producto.precio | number: '1.2-2' }} USD</span>
-              </div>
-            </a>
-          </div>
+          }
         }
       </div>
     } @else {
@@ -48,7 +60,7 @@
     }
   </div>
 
-  @if (productos().length > 1) {
+  @if (slides().length > 1) {
     <button type="button" class="hero-carousel__nav hero-carousel__nav--prev" aria-label="Diapositiva anterior" (click)="anterior()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
     </button>
@@ -57,12 +69,12 @@
     </button>
 
     <div class="hero-carousel__dots">
-      @for (producto of productos(); track producto.id; let i = $index) {
+      @for (slide of slides(); track trackSlide(slide); let i = $index) {
         <button
           type="button"
           class="hero-carousel__dot"
           [class.hero-carousel__dot--activo]="i === actual()"
-          [attr.aria-label]="'Ir a la oferta ' + (i + 1)"
+          [attr.aria-label]="'Ir a la diapositiva ' + (i + 1)"
           (click)="irA(i)"
         ></button>
       }

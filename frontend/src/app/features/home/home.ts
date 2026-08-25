@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { Marca } from '../../core/models/marca.model';
 import { Producto } from '../../core/models/producto.model';
+import { ConfiguracionService } from '../../core/services/configuracion.service';
 import { MarcaService } from '../../core/services/marca.service';
 import { ProductoService } from '../../core/services/producto.service';
 import { BrandSlider } from '../../shared/components/brand-slider/brand-slider';
@@ -18,6 +19,7 @@ import { ScrollRevealDirective } from '../../shared/directives/scroll-reveal.dir
 export class Home implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly marcaService = inject(MarcaService);
+  protected readonly configuracion = inject(ConfiguracionService);
 
   readonly destacados = signal<Producto[]>([]);
   readonly novedades = signal<Producto[]>([]);
@@ -26,6 +28,9 @@ export class Home implements OnInit {
   readonly error = signal<string | null>(null);
 
   ngOnInit(): void {
+    // El navbar también la carga, pero no hay que depender de ese orden
+    // para que el banner de promo aparezca.
+    this.configuracion.cargar().subscribe();
     this.marcaService.listar().subscribe({ next: (m) => this.marcas.set(m) });
 
     this.productoService.listar({ activo: true }).subscribe({
