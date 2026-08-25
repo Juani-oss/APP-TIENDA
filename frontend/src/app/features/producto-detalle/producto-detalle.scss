@@ -470,8 +470,13 @@
     // misma cantidad de clases le gana por tener además un selector de
     // elemento. Esto asegura que el estilo de estrella sea el que gane.
     .comentarios__estrella-btn {
+      // appearance:none quita el look nativo del botón (el "cuadrado" que
+      // el navegador dibuja alrededor por default); el foco por teclado
+      // sigue siendo accesible vía el box-shadow de abajo.
+      appearance: none;
       background: none;
       border: none;
+      outline: none;
       padding: 0;
       font-size: 1.7rem;
       line-height: 1;
@@ -484,8 +489,13 @@
         transform: scale(1.1);
       }
 
+      &:focus-visible {
+        border-radius: 4px;
+        box-shadow: 0 0 0 2px var(--color-primary-light), 0 0 0 4px var(--color-primary);
+      }
+
       &.comentarios__estrella-btn--activa {
-        color: var(--color-accent-dark);
+        color: #ffc107;
       }
     }
   }

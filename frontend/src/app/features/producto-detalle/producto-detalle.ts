@@ -114,6 +114,14 @@ export class ProductoDetalle {
     this.imagenActual.set(url);
   }
 
+  elegirCalificacion(n: number): void {
+    this.calificacion.set(n);
+    // En pantallas táctiles "mouseleave" no siempre se dispara, así que sin
+    // esto la última estrella tocada se queda marcada como "hover" para
+    // siempre y tapa la selección real (nunca se ve bajar la calificación).
+    this.calificacionHover.set(0);
+  }
+
   estrellas(calificacion: number): string {
     return '★'.repeat(calificacion) + '☆'.repeat(5 - calificacion);
   }

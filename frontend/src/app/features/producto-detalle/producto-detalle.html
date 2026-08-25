@@ -231,7 +231,7 @@
                 [class.comentarios__estrella-btn--activa]="n <= (calificacionHover() || calificacion())"
                 [attr.aria-pressed]="n === calificacion()"
                 [attr.aria-label]="n + ' estrella' + (n > 1 ? 's' : '')"
-                (click)="calificacion.set(n)"
+                (click)="elegirCalificacion(n)"
                 (mouseenter)="calificacionHover.set(n)"
                 (mouseleave)="calificacionHover.set(0)"
               >★</button>
