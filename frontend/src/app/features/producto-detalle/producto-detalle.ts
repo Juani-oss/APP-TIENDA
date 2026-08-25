@@ -134,8 +134,9 @@ export class ProductoDetalle {
       return '';
     }
     const mensaje =
-      `¡Hola! Quiero cotizar el envío a Ecuador de este producto (lo compro en Amazon y lo mando al casillero):\n` +
-      `${p.nombre}\n` +
+      `¡Hola! Quiero comprar este producto en Amazon y que me asesoren antes de comprar` +
+      ` para coordinar el envío a Ecuador por el casillero:\n` +
+      `${p.nombre} - ${p.precio.toFixed(2)} USD\n` +
       `${window.location.href}`;
     return whatsappHref(mensaje);
   }

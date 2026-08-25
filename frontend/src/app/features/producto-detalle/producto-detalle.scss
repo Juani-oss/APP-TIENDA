@@ -214,6 +214,19 @@
         color: var(--color-primary);
       }
     }
+
+    &--secundario {
+      background: transparent;
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
+      font-weight: 600;
+      padding: 0.68rem 1.1rem;
+
+      &:hover {
+        border-color: var(--color-text-muted);
+        color: var(--color-text);
+      }
+    }
   }
 
   &__descripcion {
@@ -267,12 +280,6 @@
     margin: 0 0 0.9rem;
     font-size: 0.8rem;
     color: var(--color-warning);
-  }
-
-  &__casillero-acciones {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
   }
 
   &__estado {

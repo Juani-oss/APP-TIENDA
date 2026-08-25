@@ -37,18 +37,33 @@
   </a>
 
   @if (producto().es_afiliado) {
-    <a
-      class="card__add card__add--afiliado"
-      [href]="producto().enlace_afiliado"
-      target="_blank"
-      rel="noopener sponsored"
-      (click)="$event.stopPropagation()"
-    >
-      Ver oferta en Amazon
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M7 17L17 7M17 7H9M17 7v8" />
-      </svg>
-    </a>
+    @if (configuracion.envioCasilleroHabilitado()) {
+      <!-- Con casillero activo, primero pasan por el detalle (ahí está el
+           WhatsApp de asesoría) en vez de irse directo a Amazon. -->
+      <a
+        class="card__add card__add--afiliado"
+        [routerLink]="['/productos', producto().id]"
+        (click)="$event.stopPropagation()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 22c4.5-4 7-7.5 7-11a7 7 0 1 0-14 0c0 3.5 2.5 7 7 11z" /><circle cx="12" cy="11" r="2.3" />
+        </svg>
+        Ver cómo comprarlo
+      </a>
+    } @else {
+      <a
+        class="card__add card__add--afiliado"
+        [href]="producto().enlace_afiliado"
+        target="_blank"
+        rel="noopener sponsored"
+        (click)="$event.stopPropagation()"
+      >
+        Ver oferta en Amazon
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 17L17 7M17 7H9M17 7v8" />
+        </svg>
+      </a>
+    }
     <p class="card__disclosure">Como afiliados, ganamos por compras que califican.</p>
   } @else if (configuracion.carritoHabilitado()) {
     <button type="button" class="card__add" (click)="irAlCarrito($event)">

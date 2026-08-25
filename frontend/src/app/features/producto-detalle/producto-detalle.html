@@ -70,14 +70,33 @@
 
       <div class="detalle__acciones">
         @if (p.es_afiliado) {
-          <a
-            class="detalle__btn detalle__btn--afiliado"
-            [href]="p.enlace_afiliado"
-            target="_blank"
-            rel="noopener sponsored"
-          >
-            Ver oferta en Amazon ↗
-          </a>
+          @if (configuracion.envioCasilleroHabilitado()) {
+            <a
+              class="detalle__btn detalle__btn--whatsapp"
+              [href]="whatsappHrefEnvio()"
+              target="_blank"
+              rel="noopener"
+            >
+              🟢 Recibir asesoría por WhatsApp
+            </a>
+            <a
+              class="detalle__btn detalle__btn--secundario"
+              [href]="p.enlace_afiliado"
+              target="_blank"
+              rel="noopener sponsored"
+            >
+              Ver producto en Amazon ↗
+            </a>
+          } @else {
+            <a
+              class="detalle__btn detalle__btn--afiliado"
+              [href]="p.enlace_afiliado"
+              target="_blank"
+              rel="noopener sponsored"
+            >
+              Ver oferta en Amazon ↗
+            </a>
+          }
         } @else if (p.stock > 0) {
           <a
             class="detalle__btn detalle__btn--whatsapp"
@@ -101,11 +120,12 @@
 
         @if (configuracion.envioCasilleroHabilitado()) {
           <div class="detalle__casillero">
-            <h3>📦 ¿Querés que te llegue más barato a Ecuador?</h3>
+            <h3>📦 Coordinamos tu envío a Ecuador</h3>
             <p>
-              Comprá el producto en Amazon con el botón de arriba, pero en vez de tu
-              dirección, poné esta al pagar. Nosotros lo recibimos, lo consolidamos y te lo
-              traemos a Ecuador más barato que el envío internacional directo.
+              Escribinos por WhatsApp antes de comprar: te asesoramos, confirmamos el costo
+              del envío y usás esta dirección del casillero al pagar en Amazon. Nosotros lo
+              recibimos, lo consolidamos y te lo traemos a Ecuador más barato que el envío
+              internacional directo.
             </p>
 
             <address class="detalle__casillero-direccion">
@@ -118,19 +138,9 @@
               <p class="detalle__casillero-notas">⚠️ {{ configuracion.config()?.casillero_notas }}</p>
             }
 
-            <div class="detalle__casillero-acciones">
-              <button type="button" class="detalle__btn detalle__btn--compartir" (click)="copiarDireccion()">
-                📋 {{ direccionCopiada() ? '¡Dirección copiada!' : 'Copiar dirección' }}
-              </button>
-              <a
-                class="detalle__btn detalle__btn--whatsapp"
-                [href]="whatsappHrefEnvio()"
-                target="_blank"
-                rel="noopener"
-              >
-                🟢 Cotizar envío a Ecuador
-              </a>
-            </div>
+            <button type="button" class="detalle__btn detalle__btn--compartir" (click)="copiarDireccion()">
+              📋 {{ direccionCopiada() ? '¡Dirección copiada!' : 'Copiar dirección' }}
+            </button>
           </div>
         }
       }
