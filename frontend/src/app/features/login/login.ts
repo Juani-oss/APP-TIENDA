@@ -19,6 +19,10 @@ export class Login {
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
 
+  /** Si no es null, estamos en el segundo paso: pedir el código de la app autenticadora. */
+  readonly factorIdMfa = signal<string | null>(null);
+  readonly codigoMfa = signal('');
+
   enviar(): void {
     if (!this.email() || !this.password()) {
       this.error.set('Completá email y contraseña.');
@@ -29,8 +33,12 @@ export class Login {
     this.error.set(null);
 
     this.auth.login({ email: this.email(), password: this.password() }).subscribe({
-      next: () => {
+      next: (resultado) => {
         this.cargando.set(false);
+        if (resultado.requiereMfa && resultado.factorId) {
+          this.factorIdMfa.set(resultado.factorId);
+          return;
+        }
         this.router.navigate(['/admin']);
       },
       error: () => {
@@ -38,5 +46,34 @@ export class Login {
         this.error.set('Email o contraseña incorrectos.');
       },
     });
+  }
+
+  enviarCodigoMfa(): void {
+    const factorId = this.factorIdMfa();
+    if (!factorId || this.codigoMfa().trim().length !== 6) {
+      this.error.set('Ingresá el código de 6 dígitos de tu app autenticadora.');
+      return;
+    }
+
+    this.cargando.set(true);
+    this.error.set(null);
+
+    this.auth.verificarCodigoMfa(factorId, this.codigoMfa().trim()).subscribe({
+      next: () => {
+        this.cargando.set(false);
+        this.router.navigate(['/admin']);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.codigoMfa.set('');
+        this.error.set('Código incorrecto. Probá de nuevo.');
+      },
+    });
+  }
+
+  volverAPassword(): void {
+    this.factorIdMfa.set(null);
+    this.codigoMfa.set('');
+    this.error.set(null);
   }
 }

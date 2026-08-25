@@ -37,6 +37,81 @@
     </p>
 
     <div class="configuracion__seccion">
+      <h2>🔒 Verificación en dos pasos (2FA)</h2>
+      <p class="configuracion__seccion-hint">
+        Protegé tu cuenta de admin con un segundo factor además de la contraseña. Necesitás
+        una app autenticadora en tu teléfono (Google Authenticator, Authy, etc.).
+      </p>
+
+      @if (cargandoMfa()) {
+        <p class="configuracion__estado">Cargando estado de 2FA...</p>
+      } @else if (activandoMfa()) {
+        @if (!qrCodeMfa()) {
+          <p class="configuracion__estado">Generando código QR...</p>
+        } @else {
+          <div class="configuracion__mfa-enrolar">
+            <ol>
+              <li>Abrí tu app autenticadora (Google Authenticator, Authy, etc.)</li>
+              <li>Escaneá este código QR</li>
+            </ol>
+            <img [src]="qrCodeMfa()" alt="Código QR para activar 2FA" class="configuracion__mfa-qr">
+            <p class="configuracion__seccion-hint">
+              ¿No podés escanear? Ingresá este código a mano: <code>{{ secretMfa() }}</code>
+            </p>
+            <label>
+              Código de 6 dígitos
+              <input
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="000000"
+                [ngModel]="codigoConfirmacion()"
+                (ngModelChange)="codigoConfirmacion.set($event)"
+                name="codigoConfirmacionMfa"
+              />
+            </label>
+            <div class="configuracion__mfa-acciones">
+              <button
+                type="button"
+                class="configuracion__btn-guardar"
+                [disabled]="confirmandoMfa()"
+                (click)="confirmarActivacionMfa()"
+              >
+                {{ confirmandoMfa() ? 'Verificando...' : 'Confirmar y activar' }}
+              </button>
+              <button type="button" class="configuracion__btn-secundario" (click)="cancelarActivacionMfa()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        }
+      } @else if (mfaActivo()) {
+        <div class="configuracion__mfa-estado">
+          <span class="badge badge--on">✓ 2FA activado</span>
+          <button
+            type="button"
+            class="configuracion__btn-peligro"
+            [disabled]="desactivandoMfa()"
+            (click)="desactivarMfa(mfaFactores()[0].id)"
+          >
+            {{ desactivandoMfa() ? 'Desactivando...' : 'Desactivar 2FA' }}
+          </button>
+        </div>
+      } @else {
+        <div class="configuracion__mfa-estado">
+          <span class="badge badge--off">2FA desactivado</span>
+          <button type="button" class="configuracion__btn-guardar" (click)="iniciarActivacionMfa()">
+            Activar 2FA
+          </button>
+        </div>
+      }
+
+      @if (errorMfa()) {
+        <p class="configuracion__error">{{ errorMfa() }}</p>
+      }
+    </div>
+
+    <div class="configuracion__seccion">
       <h2>Envío desde EEUU (casillero)</h2>
       <p class="configuracion__seccion-hint">
         El cliente compra el producto directo en Amazon (seguís ganando tu comisión de

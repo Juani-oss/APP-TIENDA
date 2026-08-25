@@ -1,38 +1,71 @@
 <section class="login">
-  <form class="login__card" (ngSubmit)="enviar()">
-    <h1>Ingresar</h1>
-    <p class="login__subtitulo">Acceso para administradores</p>
+  @if (!factorIdMfa()) {
+    <form class="login__card" (ngSubmit)="enviar()">
+      <h1>Ingresar</h1>
+      <p class="login__subtitulo">Acceso para administradores</p>
 
-    @if (error()) {
-      <p class="login__error">{{ error() }}</p>
-    }
+      @if (error()) {
+        <p class="login__error">{{ error() }}</p>
+      }
 
-    <label>
-      Email
-      <input
-        type="email"
-        name="email"
-        [ngModel]="email()"
-        (ngModelChange)="email.set($event)"
-        required
-        autocomplete="email"
-      />
-    </label>
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          required
+          autocomplete="email"
+        />
+      </label>
 
-    <label>
-      Contraseña
-      <input
-        type="password"
-        name="password"
-        [ngModel]="password()"
-        (ngModelChange)="password.set($event)"
-        required
-        autocomplete="current-password"
-      />
-    </label>
+      <label>
+        Contraseña
+        <input
+          type="password"
+          name="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          required
+          autocomplete="current-password"
+        />
+      </label>
 
-    <button type="submit" [disabled]="cargando()">
-      {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
-    </button>
-  </form>
+      <button type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+    </form>
+  } @else {
+    <form class="login__card" (ngSubmit)="enviarCodigoMfa()">
+      <h1>Verificación en dos pasos</h1>
+      <p class="login__subtitulo">Ingresá el código de 6 dígitos de tu app autenticadora</p>
+
+      @if (error()) {
+        <p class="login__error">{{ error() }}</p>
+      }
+
+      <label>
+        Código
+        <input
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="000000"
+          [ngModel]="codigoMfa()"
+          (ngModelChange)="codigoMfa.set($event)"
+          name="codigoMfa"
+          required
+          autocomplete="one-time-code"
+        />
+      </label>
+
+      <button type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Verificando...' : 'Verificar' }}
+      </button>
+      <button type="button" class="login__volver" (click)="volverAPassword()">
+        ← Volver
+      </button>
+    </form>
+  }
 </section>

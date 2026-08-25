@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { AuthService, FactorMfa } from '../../../core/services/auth.service';
 import { ConfiguracionService } from '../../../core/services/configuracion.service';
+import { esUrlValida } from '../../../core/utils/validar-url';
 
 interface FormCasillero {
   envio_casillero_habilitado: boolean;
@@ -43,6 +45,7 @@ const REDES_VACIO: FormRedes = {
 })
 export class AdminConfiguracion implements OnInit {
   protected readonly configuracion = inject(ConfiguracionService);
+  private readonly auth = inject(AuthService);
 
   readonly cargando = signal(true);
   readonly guardando = signal(false);
@@ -55,7 +58,22 @@ export class AdminConfiguracion implements OnInit {
   readonly guardandoRedes = signal(false);
   readonly redesGuardadas = signal(false);
 
+  // ---------- 2FA ----------
+  readonly mfaFactores = signal<FactorMfa[]>([]);
+  readonly mfaActivo = computed(() => this.mfaFactores().some((f) => f.status === 'verified'));
+  readonly cargandoMfa = signal(true);
+  readonly errorMfa = signal<string | null>(null);
+
+  readonly activandoMfa = signal(false);
+  readonly qrCodeMfa = signal<string | null>(null);
+  readonly secretMfa = signal<string | null>(null);
+  readonly factorIdPendiente = signal<string | null>(null);
+  readonly codigoConfirmacion = signal('');
+  readonly confirmandoMfa = signal(false);
+  readonly desactivandoMfa = signal(false);
+
   ngOnInit(): void {
+    this.cargarMfa();
     this.configuracion.cargar().subscribe({
       next: (c) => {
         this.formCasillero.set({
@@ -105,6 +123,11 @@ export class AdminConfiguracion implements OnInit {
 
   guardarRedes(): void {
     const datos = this.formRedes();
+    if (!esUrlValida(datos.instagram_url) || !esUrlValida(datos.facebook_url)) {
+      this.error.set('Los links de redes sociales tienen que ser URLs válidas (http:// o https://).');
+      return;
+    }
+
     this.guardandoRedes.set(true);
     this.error.set(null);
 
@@ -153,5 +176,85 @@ export class AdminConfiguracion implements OnInit {
           this.error.set('No se pudo guardar la dirección. Intentá de nuevo.');
         },
       });
+  }
+
+  // ---------- 2FA ----------
+
+  private cargarMfa(): void {
+    this.cargandoMfa.set(true);
+    this.auth.mfaListarFactores().subscribe({
+      next: (factores) => {
+        this.mfaFactores.set(factores);
+        this.cargandoMfa.set(false);
+      },
+      error: () => {
+        this.errorMfa.set('No se pudo cargar el estado de 2FA.');
+        this.cargandoMfa.set(false);
+      },
+    });
+  }
+
+  iniciarActivacionMfa(): void {
+    this.errorMfa.set(null);
+    this.activandoMfa.set(true);
+    this.auth.mfaEnrollar().subscribe({
+      next: ({ factorId, qrCode, secret }) => {
+        this.factorIdPendiente.set(factorId);
+        this.qrCodeMfa.set(qrCode);
+        this.secretMfa.set(secret);
+      },
+      error: () => {
+        this.errorMfa.set('No se pudo iniciar la activación de 2FA. Intentá de nuevo.');
+        this.activandoMfa.set(false);
+      },
+    });
+  }
+
+  confirmarActivacionMfa(): void {
+    const factorId = this.factorIdPendiente();
+    if (!factorId || this.codigoConfirmacion().trim().length !== 6) {
+      this.errorMfa.set('Ingresá el código de 6 dígitos de tu app autenticadora.');
+      return;
+    }
+
+    this.confirmandoMfa.set(true);
+    this.errorMfa.set(null);
+    this.auth.mfaConfirmarEnrolamiento(factorId, this.codigoConfirmacion().trim()).subscribe({
+      next: () => {
+        this.confirmandoMfa.set(false);
+        this.cancelarActivacionMfa();
+        this.cargarMfa();
+      },
+      error: () => {
+        this.confirmandoMfa.set(false);
+        this.errorMfa.set('Código incorrecto. Probá de nuevo.');
+      },
+    });
+  }
+
+  cancelarActivacionMfa(): void {
+    this.activandoMfa.set(false);
+    this.qrCodeMfa.set(null);
+    this.secretMfa.set(null);
+    this.factorIdPendiente.set(null);
+    this.codigoConfirmacion.set('');
+  }
+
+  desactivarMfa(factorId: string): void {
+    if (!confirm('¿Desactivar la verificación en dos pasos? Tu cuenta va a quedar protegida solo con la contraseña.')) {
+      return;
+    }
+    this.desactivandoMfa.set(true);
+    this.errorMfa.set(null);
+    this.auth.mfaDesactivar(factorId).subscribe({
+      next: () => {
+        this.desactivandoMfa.set(false);
+        this.cargarMfa();
+      },
+      error: () => {
+        this.desactivandoMfa.set(false);
+        this.errorMfa.set('No se pudo desactivar. Intentá de nuevo.');
+      },
+    });
   }
 }

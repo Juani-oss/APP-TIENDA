@@ -412,6 +412,14 @@
     border-radius: 999px;
   }
 
+  &__honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
   &__form {
     align-self: flex-start;
     background: var(--color-surface);

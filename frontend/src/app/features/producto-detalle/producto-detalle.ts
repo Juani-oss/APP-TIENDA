@@ -71,6 +71,8 @@ export class ProductoDetalle {
   readonly autor = signal('');
   readonly contenido = signal('');
   readonly calificacion = signal(5);
+  /** Honeypot: un humano nunca lo completa, solo los bots de spam. */
+  readonly honeypot = signal('');
   readonly enviandoComentario = signal(false);
   readonly comentarioEnviado = signal(false);
   readonly linkCopiado = signal(false);
@@ -167,6 +169,16 @@ export class ProductoDetalle {
 
   enviarComentario(): void {
     if (!this.autor().trim() || !this.contenido().trim()) {
+      return;
+    }
+
+    if (this.honeypot().trim()) {
+      // Es un bot: simulamos que se envió bien (para no delatar el
+      // honeypot) pero no tocamos la base de datos para nada.
+      this.comentarioEnviado.set(true);
+      this.autor.set('');
+      this.contenido.set('');
+      this.calificacion.set(5);
       return;
     }
 

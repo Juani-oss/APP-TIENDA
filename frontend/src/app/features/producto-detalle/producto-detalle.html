@@ -227,6 +227,22 @@
           ></textarea>
         </label>
 
+        <!-- Honeypot: invisible para personas, los bots de spam suelen completar
+             cualquier campo que encuentren. Si viene lleno, no se envía nada. -->
+        <div class="comentarios__honeypot" aria-hidden="true">
+          <label>
+            Sitio web
+            <input
+              type="text"
+              name="sitio_web"
+              tabindex="-1"
+              autocomplete="off"
+              [ngModel]="honeypot()"
+              (ngModelChange)="honeypot.set($event)"
+            />
+          </label>
+        </div>
+
         <button type="submit" [disabled]="enviandoComentario()">
           {{ enviandoComentario() ? 'Enviando...' : 'Enviar comentario' }}
         </button>

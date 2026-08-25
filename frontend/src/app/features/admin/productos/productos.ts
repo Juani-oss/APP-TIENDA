@@ -10,6 +10,7 @@ import { MarcaService } from '../../../core/services/marca.service';
 import { ProductoService } from '../../../core/services/producto.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { resolverImagenUrl } from '../../../core/utils/imagen-url';
+import { esUrlValida } from '../../../core/utils/validar-url';
 
 const VACIO: ProductoInput = {
   nombre: '',
@@ -223,6 +224,14 @@ export class AdminProductos implements OnInit {
     }
     if (datos.es_afiliado && !datos.enlace_afiliado?.trim()) {
       this.error.set('Los productos de afiliado necesitan el link de Amazon (con tu tag).');
+      return;
+    }
+    if (datos.es_afiliado && !esUrlValida(datos.enlace_afiliado)) {
+      this.error.set('El link de afiliado no es una URL válida (tiene que empezar con http:// o https://).');
+      return;
+    }
+    if (datos.imagenes.some((img) => !esUrlValida(img.url))) {
+      this.error.set('Alguna foto de la galería quedó con una URL inválida.');
       return;
     }
     if (datos.caracteristicas.some((c) => !c.clave.trim() || !c.valor.trim())) {

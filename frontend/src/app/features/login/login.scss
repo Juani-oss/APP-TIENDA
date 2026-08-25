@@ -74,4 +74,18 @@
       cursor: not-allowed;
     }
   }
+
+  &__volver {
+    margin-top: 0;
+    background: none;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 0.3rem;
+
+    &:hover:not(:disabled) {
+      background: none;
+      color: var(--color-primary);
+    }
+  }
 }
