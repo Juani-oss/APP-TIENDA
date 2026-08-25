@@ -1,0 +1,335 @@
+// El sticky va en :host (el elemento <app-navbar>), no en .navbar (el
+// <header> de adentro): si se lo ponés al <header>, su "contenedor" para
+// el cálculo de sticky termina siendo <app-navbar>, que mide EXACTAMENTE
+// lo mismo que el header — sin margen para pegarse, se despega en el
+// primer píxel de scroll. En :host, el contenedor pasa a ser .public-layout
+// (alto = toda la página), que sí le da lugar para quedarse fijo arriba.
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: block;
+}
+
+.navbar {
+  // Vidrio esmerilado: semi-transparente + blur de lo que pasa por detrás
+  // al scrollear. Con fallback sólido para navegadores sin backdrop-filter.
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom-color: rgba(33, 37, 41, 0.08);
+  }
+
+  /* Fila principal: logo + buscador + cuenta/carrito. */
+  &__main {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.85rem clamp(1.1rem, 4vw, 2.5rem);
+    width: 100%;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__brand-logo {
+    height: 42px;
+    width: auto;
+    display: block;
+  }
+
+  &__search {
+    flex: 1;
+    display: flex;
+    max-width: 640px;
+    min-width: 0;
+    margin: 0 auto;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    background: var(--color-surface);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-primary-light);
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      padding: 0.68rem 1.1rem;
+      font-size: 0.94rem;
+      outline: none;
+      min-width: 0;
+      color: var(--color-text);
+      background: transparent;
+
+      &::placeholder {
+        color: var(--color-text-faint);
+      }
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      width: 3.1rem;
+      cursor: pointer;
+      transition: background 0.15s;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        background: var(--color-accent-dark);
+      }
+    }
+  }
+
+  &__search-cat {
+    border: none;
+    border-right: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding-inline: 0.85rem;
+    max-width: 9.5rem;
+    flex-shrink: 0;
+
+    @media (max-width: 640px) {
+      display: none;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--radius-md);
+    transition: background 0.15s;
+
+    &:hover,
+    &--activa {
+      background: var(--color-bg);
+    }
+  }
+
+  &__action-icon {
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+
+  svg.navbar__action-icon {
+    width: 1.55rem;
+    height: 1.55rem;
+    flex-shrink: 0;
+    stroke: var(--color-text);
+    fill: none;
+    stroke-width: 1.7;
+  }
+
+  &__cart-icon-wrap {
+    position: relative;
+  }
+
+  &__cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    min-width: 17px;
+    height: 17px;
+    padding-inline: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 0.63rem;
+    font-weight: 800;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-surface);
+  }
+
+  &__action-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    font-size: 0.88rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    small {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--color-text-faint);
+    }
+  }
+
+  /* Segunda fila: franja de categorías/departamentos. */
+  &__deptos {
+    background: rgba(248, 249, 250, 0.55);
+    border-top: 1px solid rgba(33, 37, 41, 0.06);
+  }
+
+  &__deptos-inner {
+    width: 100%;
+    padding: 0.5rem clamp(1.1rem, 4vw, 2.5rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Solo esta franja scrollea horizontalmente; el toggle de Categorías
+     queda fijo afuera para que su panel desplegable no quede recortado
+     por el overflow. */
+  &__deptos-scroll {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__depto-toggle-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  &__depto-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  }
+
+  &__depto-icon {
+    font-size: 0.8rem;
+  }
+
+  &__caret {
+    font-size: 0.7rem;
+    transition: transform 0.15s;
+
+    &--abierta {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__cat-panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    min-width: 240px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    z-index: 20;
+
+    a {
+      padding: 0.55rem 0.75rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      color: var(--color-text);
+      font-size: 0.9rem;
+
+      &:hover {
+        background: var(--color-bg);
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &__cat-vacio {
+    padding: 0.55rem 0.75rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+  }
+
+  &__depto-link {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding-block: 0.2rem;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+
+    &:hover,
+    &.active {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+  }
+
+  @media (max-width: 900px) {
+    &__main {
+      flex-wrap: wrap;
+    }
+
+    &__search {
+      order: 3;
+      max-width: none;
+      flex-basis: 100%;
+    }
+
+    &__action-text {
+      display: none;
+    }
+  }
+}

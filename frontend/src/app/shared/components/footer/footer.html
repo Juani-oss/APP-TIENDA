@@ -1,0 +1,43 @@
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__col">
+      <img src="/logo.png" alt="RomVal Store" class="footer__logo footer__logo--grande">
+
+      @if (configuracion.config()?.instagram_url || configuracion.config()?.facebook_url) {
+        <div class="footer__social">
+          @if (configuracion.config()?.instagram_url; as ig) {
+            <a [href]="ig" target="_blank" rel="noopener" aria-label="Instagram de RomVal Store">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-instagram" /></svg>
+            </a>
+          }
+          @if (configuracion.config()?.facebook_url; as fb) {
+            <a [href]="fb" target="_blank" rel="noopener" aria-label="Facebook de RomVal Store">
+              <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-facebook" /></svg>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="footer__col">
+      <h4>Categorías</h4>
+      <ul>
+        @for (categoria of categorias(); track categoria.id) {
+          <li><a [routerLink]="['/categorias', categoria.id]">{{ categoria.nombre }}</a></li>
+        }
+        <li><a routerLink="/categorias">Ver todas</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h4>Ayuda</h4>
+      <ul>
+        <li><a routerLink="/">Preguntas frecuentes</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <p>© {{ anio }} RomVal Store. Todos los derechos reservados.</p>
+  </div>
+</footer>

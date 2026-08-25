@@ -1,0 +1,48 @@
+.dashboard {
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    &--alerta {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+  }
+
+  &__valor {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  &__estado {
+    color: var(--color-text-muted);
+  }
+}

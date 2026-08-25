@@ -1,0 +1,87 @@
+<section class="categorias">
+  <div class="categorias__header">
+    <h1>Categorías</h1>
+    <button type="button" (click)="abrirNuevo()">+ Nueva categoría</button>
+  </div>
+
+  @if (error()) {
+    <p class="categorias__error">{{ error() }}</p>
+  }
+
+  @if (mostrarForm()) {
+    <form class="categorias__form" (ngSubmit)="guardar()">
+      <h3>{{ editandoId() ? 'Editar categoría' : 'Nueva categoría' }}</h3>
+
+      <label>
+        Nombre
+        <input
+          type="text"
+          [ngModel]="form().nombre"
+          (ngModelChange)="actualizarCampo('nombre', $event); autoSlug()"
+          name="nombre"
+          required
+        />
+      </label>
+
+      <label>
+        Slug
+        <input
+          type="text"
+          [ngModel]="form().slug"
+          (ngModelChange)="actualizarCampo('slug', $event)"
+          name="slug"
+          required
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          rows="2"
+          [ngModel]="form().descripcion"
+          (ngModelChange)="actualizarCampo('descripcion', $event)"
+          name="descripcion"
+        ></textarea>
+      </label>
+
+      <div class="categorias__form-actions">
+        <button type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+        <button type="button" class="secundario" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="categorias__estado">Cargando...</p>
+  } @else if (categorias().length === 0) {
+    <p class="categorias__estado">No hay categorías cargadas todavía.</p>
+  } @else {
+    <div class="categorias__tabla-wrap">
+      <table class="categorias__tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Slug</th>
+            <th>Descripción</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (categoria of categorias(); track categoria.id) {
+            <tr>
+              <td>{{ categoria.nombre }}</td>
+              <td>{{ categoria.slug }}</td>
+              <td>{{ categoria.descripcion || '—' }}</td>
+              <td class="categorias__acciones">
+                <button type="button" class="secundario" (click)="editar(categoria)">Editar</button>
+                <button type="button" class="peligro" (click)="eliminar(categoria)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,14 @@
+<section class="buscar">
+  <h1>Resultados para "{{ q() }}"</h1>
+
+  @if (cargando()) {
+    <p class="buscar__estado">Buscando...</p>
+  } @else if (error()) {
+    <p class="buscar__estado buscar__estado--error">{{ error() }}</p>
+  } @else if (productos().length === 0) {
+    <p class="buscar__estado">No encontramos productos que coincidan con tu búsqueda.</p>
+  } @else {
+    <p class="buscar__cantidad">{{ productos().length }} producto(s) encontrado(s)</p>
+    <app-productos-separados [productos]="productos()" />
+  }
+</section>

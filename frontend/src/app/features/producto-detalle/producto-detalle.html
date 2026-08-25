@@ -1,0 +1,236 @@
+@if (cargando()) {
+  <p class="detalle__estado">Cargando...</p>
+} @else if (error()) {
+  <p class="detalle__estado detalle__estado--error">{{ error() }}</p>
+} @else if (producto(); as p) {
+  <section class="detalle">
+    <div class="detalle__galeria">
+      <div class="detalle__imagen">
+        @if (imagenActual()) {
+          <img [src]="resolverImagenUrl(imagenActual())" [alt]="p.nombre" />
+        } @else {
+          <div class="detalle__placeholder">🛍️</div>
+        }
+        @if (p.destacado) {
+          <span class="detalle__badge">Destacado</span>
+        }
+        @if (p.es_afiliado) {
+          <span class="detalle__badge detalle__badge--afiliado">Amazon</span>
+        }
+      </div>
+
+      @if (galeria().length > 1) {
+        <div class="detalle__miniaturas">
+          @for (url of galeria(); track url) {
+            <button
+              type="button"
+              class="detalle__miniatura"
+              [class.detalle__miniatura--activa]="url === imagenActual()"
+              (click)="seleccionarImagen(url)"
+            >
+              <img [src]="resolverImagenUrl(url)" alt="" />
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="detalle__info">
+      <div class="detalle__migas">
+        <a [routerLink]="['/categorias', p.categoria_id]">{{ p.categoria.nombre }}</a>
+        <span>›</span>
+        <a [routerLink]="['/marcas', p.marca_id]">{{ p.marca.nombre }}</a>
+      </div>
+
+      <h1>{{ p.nombre }}</h1>
+
+      @if (comentarios().length > 0) {
+        <a class="detalle__resumen-reviews" href="#comentarios">
+          {{ comentarios().length }} comentario(s)
+        </a>
+      }
+
+      <div class="detalle__precio-fila">
+        <p class="detalle__precio">{{ p.precio | number: '1.2-2' }} USD</p>
+        @if (p.precio_original) {
+          <span class="detalle__precio-original">{{ p.precio_original | number: '1.2-2' }} USD</span>
+        }
+        @if (descuento(); as pct) {
+          <span class="detalle__descuento-badge">-{{ pct }}%</span>
+        }
+      </div>
+
+      @if (!p.es_afiliado) {
+        @if (p.stock === 0) {
+          <p class="detalle__sin-stock">✕ Sin stock disponible</p>
+        } @else {
+          <p class="detalle__stock">✓ {{ p.stock }} unidades disponibles</p>
+        }
+      }
+
+      <div class="detalle__acciones">
+        @if (p.es_afiliado) {
+          <a
+            class="detalle__btn detalle__btn--afiliado"
+            [href]="p.enlace_afiliado"
+            target="_blank"
+            rel="noopener sponsored"
+          >
+            Ver oferta en Amazon ↗
+          </a>
+        } @else if (p.stock > 0) {
+          <a
+            class="detalle__btn detalle__btn--whatsapp"
+            [href]="whatsappHref()"
+            target="_blank"
+            rel="noopener"
+          >
+            🟢 Comprar por WhatsApp
+          </a>
+        }
+        <button type="button" class="detalle__btn detalle__btn--compartir" (click)="compartir()">
+          🔗 {{ linkCopiado() ? '¡Link copiado!' : 'Compartir' }}
+        </button>
+      </div>
+
+      @if (p.es_afiliado) {
+        <p class="detalle__disclosure">
+          Como afiliados, ganamos por compras que califican cuando comprás a través de este
+          enlace. No implica costo extra para vos.
+        </p>
+
+        @if (configuracion.envioCasilleroHabilitado()) {
+          <div class="detalle__casillero">
+            <h3>📦 ¿Querés que te llegue más barato a Ecuador?</h3>
+            <p>
+              Comprá el producto en Amazon con el botón de arriba, pero en vez de tu
+              dirección, poné esta al pagar. Nosotros lo recibimos, lo consolidamos y te lo
+              traemos a Ecuador más barato que el envío internacional directo.
+            </p>
+
+            <address class="detalle__casillero-direccion">
+              @for (linea of direccionCasillero(); track linea) {
+                <span>{{ linea }}</span>
+              }
+            </address>
+
+            @if (configuracion.config()?.casillero_notas) {
+              <p class="detalle__casillero-notas">⚠️ {{ configuracion.config()?.casillero_notas }}</p>
+            }
+
+            <div class="detalle__casillero-acciones">
+              <button type="button" class="detalle__btn detalle__btn--compartir" (click)="copiarDireccion()">
+                📋 {{ direccionCopiada() ? '¡Dirección copiada!' : 'Copiar dirección' }}
+              </button>
+              <a
+                class="detalle__btn detalle__btn--whatsapp"
+                [href]="whatsappHrefEnvio()"
+                target="_blank"
+                rel="noopener"
+              >
+                🟢 Cotizar envío a Ecuador
+              </a>
+            </div>
+          </div>
+        }
+      }
+
+      @if (p.descripcion) {
+        <p class="detalle__descripcion">{{ p.descripcion }}</p>
+      }
+    </div>
+  </section>
+
+  @if (p.caracteristicas.length > 0) {
+    <section class="ficha-tecnica">
+      <h2>Características</h2>
+      <dl class="ficha-tecnica__lista">
+        @for (c of p.caracteristicas; track c.id) {
+          <div class="ficha-tecnica__fila">
+            <dt>{{ c.clave }}</dt>
+            <dd>{{ c.valor }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+  }
+
+  <section class="comentarios" id="comentarios">
+    <div class="comentarios__cols">
+      <div class="comentarios__col-lista">
+        <h2>Comentarios de clientes</h2>
+
+        @if (comentarios().length === 0) {
+          <p class="comentarios__estado">Sé el primero en comentar este producto.</p>
+        } @else {
+          <ul class="comentarios__lista">
+            @for (comentario of comentarios(); track comentario.id) {
+              <li>
+                <div class="comentarios__avatar">{{ comentario.autor.charAt(0).toUpperCase() }}</div>
+                <div class="comentarios__cuerpo">
+                  <div class="comentarios__cabecera">
+                    <strong>{{ comentario.autor }}</strong>
+                    <span class="comentarios__estrellas">{{ estrellas(comentario.calificacion) }}</span>
+                    @if (!comentario.aprobado) {
+                      <span class="comentarios__pendiente">Pendiente de aprobación</span>
+                    }
+                  </div>
+                  <p>{{ comentario.contenido }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <form class="comentarios__form" (ngSubmit)="enviarComentario()">
+        <h3>Dejá tu comentario</h3>
+
+        @if (comentarioEnviado()) {
+          <p class="comentarios__ok">
+            ¡Gracias! Ya se ve arriba, marcado como pendiente hasta que lo aprobemos.
+          </p>
+        }
+
+        <label>
+          Nombre
+          <input
+            type="text"
+            name="autor"
+            [ngModel]="autor()"
+            (ngModelChange)="autor.set($event)"
+            required
+          />
+        </label>
+
+        <label>
+          Calificación
+          <select
+            name="calificacion"
+            [ngModel]="calificacion()"
+            (ngModelChange)="calificacion.set($event)"
+          >
+            @for (n of [5, 4, 3, 2, 1]; track n) {
+              <option [value]="n">{{ n }} estrellas</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Comentario
+          <textarea
+            name="contenido"
+            rows="3"
+            [ngModel]="contenido()"
+            (ngModelChange)="contenido.set($event)"
+            required
+          ></textarea>
+        </label>
+
+        <button type="submit" [disabled]="enviandoComentario()">
+          {{ enviandoComentario() ? 'Enviando...' : 'Enviar comentario' }}
+        </button>
+      </form>
+    </div>
+  </section>
+}

@@ -1,0 +1,18 @@
+<section class="marca-productos">
+  @if (marca(); as m) {
+    <h1>{{ m.nombre }}</h1>
+    @if (m.descripcion) {
+      <p class="marca-productos__descripcion">{{ m.descripcion }}</p>
+    }
+  }
+
+  @if (cargando()) {
+    <p class="marca-productos__estado">Cargando productos...</p>
+  } @else if (error()) {
+    <p class="marca-productos__estado marca-productos__estado--error">{{ error() }}</p>
+  } @else if (productos().length === 0) {
+    <p class="marca-productos__estado">No hay productos de esta marca todavía.</p>
+  } @else {
+    <app-productos-separados [productos]="productos()" />
+  }
+</section>

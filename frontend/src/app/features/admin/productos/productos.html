@@ -1,0 +1,302 @@
+<section class="productos">
+  <div class="productos__header">
+    <h1>Productos</h1>
+    <button type="button" (click)="abrirNuevo()">+ Nuevo producto</button>
+  </div>
+
+  @if (error()) {
+    <p class="productos__error">{{ error() }}</p>
+  }
+
+  @if (mostrarForm()) {
+    <form class="productos__form" (ngSubmit)="guardar()">
+      <h3>{{ editandoId() ? 'Editar producto' : 'Nuevo producto' }}</h3>
+
+      <label>
+        Nombre
+        <input
+          type="text"
+          [ngModel]="form().nombre"
+          (ngModelChange)="actualizarCampo('nombre', $event)"
+          name="nombre"
+          required
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          rows="2"
+          [ngModel]="form().descripcion"
+          (ngModelChange)="actualizarCampo('descripcion', $event)"
+          name="descripcion"
+        ></textarea>
+      </label>
+
+      <label>
+        Precio (USD)
+        <input
+          type="number"
+          step="0.01"
+          min="0.01"
+          [ngModel]="form().precio"
+          (ngModelChange)="actualizarCampo('precio', $event)"
+          name="precio"
+          required
+        />
+      </label>
+
+      <label>
+        Precio original (opcional — si lo cargás, se muestra tachado como oferta)
+        <input
+          type="number"
+          step="0.01"
+          min="0.01"
+          placeholder="Ej: 89.99"
+          [ngModel]="form().precio_original"
+          (ngModelChange)="actualizarCampo('precio_original', $event)"
+          name="precio_original"
+        />
+      </label>
+
+      <label>
+        Stock
+        <input
+          type="number"
+          min="0"
+          [ngModel]="form().stock"
+          (ngModelChange)="actualizarCampo('stock', $event)"
+          name="stock"
+          required
+        />
+      </label>
+
+      <label>
+        Imagen de portada (la que se ve en el listado y las tarjetas)
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" (change)="onArchivoSeleccionado($event)" />
+      </label>
+
+      @if (subiendoImagen()) {
+        <p class="productos__subiendo">Subiendo imagen...</p>
+      }
+
+      @if (form().imagen_url) {
+        <div class="productos__preview">
+          <img [src]="resolverImagenUrl(form().imagen_url)" alt="Vista previa" />
+        </div>
+      }
+
+      <label>
+        URL de imagen (opcional, si no subís un archivo)
+        <input
+          type="text"
+          [ngModel]="form().imagen_url"
+          (ngModelChange)="actualizarCampo('imagen_url', $event)"
+          name="imagen_url"
+        />
+      </label>
+
+      <div class="productos__seccion">
+        <p class="productos__seccion-titulo">Galería de fotos adicionales</p>
+        <p class="productos__hint">
+          Se muestran en la página de detalle del producto, además de la imagen de portada.
+        </p>
+
+        @if (form().imagenes.length > 0) {
+          <div class="productos__galeria">
+            @for (img of form().imagenes; track img.url; let i = $index) {
+              <div class="productos__galeria-item">
+                <img [src]="resolverImagenUrl(img.url)" alt="" />
+                <div class="productos__galeria-acciones">
+                  <button type="button" (click)="moverFotoGaleria(i, -1)" [disabled]="i === 0" aria-label="Mover antes">‹</button>
+                  <button type="button" class="peligro" (click)="quitarFotoGaleria(i)" aria-label="Quitar">✕</button>
+                  <button type="button" (click)="moverFotoGaleria(i, 1)" [disabled]="i === form().imagenes.length - 1" aria-label="Mover después">›</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <label>
+          Agregar foto
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" (change)="agregarFotoGaleria($event)" />
+        </label>
+        @if (subiendoImagenGaleria()) {
+          <p class="productos__subiendo">Subiendo foto...</p>
+        }
+      </div>
+
+      <div class="productos__seccion">
+        <p class="productos__seccion-titulo">Características (ficha técnica)</p>
+
+        @if (form().caracteristicas.length > 0) {
+          <div class="productos__caracteristicas">
+            @for (c of form().caracteristicas; track $index; let i = $index) {
+              <div class="productos__caracteristica-row">
+                <input
+                  type="text"
+                  placeholder="Ej: Material"
+                  [ngModel]="c.clave"
+                  (ngModelChange)="actualizarCaracteristica(i, 'clave', $event)"
+                  [name]="'car-clave-' + i"
+                />
+                <input
+                  type="text"
+                  placeholder="Ej: Algodón 100%"
+                  [ngModel]="c.valor"
+                  (ngModelChange)="actualizarCaracteristica(i, 'valor', $event)"
+                  [name]="'car-valor-' + i"
+                />
+                <button type="button" class="peligro" (click)="quitarCaracteristica(i)" aria-label="Quitar característica">✕</button>
+              </div>
+            }
+          </div>
+        }
+
+        <button type="button" class="secundario" (click)="agregarCaracteristica()">+ Agregar característica</button>
+      </div>
+
+      <label>
+        Categoría
+        <select
+          [ngModel]="form().categoria_id"
+          (ngModelChange)="actualizarCampo('categoria_id', +$event)"
+          name="categoria_id"
+          required
+        >
+          <option [value]="0" disabled>Seleccionar...</option>
+          @for (categoria of categorias(); track categoria.id) {
+            <option [value]="categoria.id">{{ categoria.nombre }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Marca
+        <select
+          [ngModel]="form().marca_id"
+          (ngModelChange)="actualizarCampo('marca_id', +$event)"
+          name="marca_id"
+          required
+        >
+          <option [value]="0" disabled>Seleccionar...</option>
+          @for (marca of marcas(); track marca.id) {
+            <option [value]="marca.id">{{ marca.nombre }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="checkbox-row">
+        <input
+          type="checkbox"
+          [ngModel]="form().destacado"
+          (ngModelChange)="actualizarCampo('destacado', $event)"
+          name="destacado"
+        />
+        Destacado
+      </label>
+
+      <label class="checkbox-row">
+        <input
+          type="checkbox"
+          [ngModel]="form().activo"
+          (ngModelChange)="actualizarCampo('activo', $event)"
+          name="activo"
+        />
+        Activo
+      </label>
+
+      <label class="checkbox-row">
+        <input
+          type="checkbox"
+          [ngModel]="form().es_afiliado"
+          (ngModelChange)="actualizarCampo('es_afiliado', $event)"
+          name="es_afiliado"
+        />
+        Producto de afiliado (no lo vendés vos, redirige a otra tienda)
+      </label>
+
+      @if (form().es_afiliado) {
+        <label>
+          Link de afiliado (con tu tag de Amazon Associates u otro programa)
+          <input
+            type="url"
+            placeholder="https://amazon.com/dp/XXXXXXXX?tag=tu-tag-20"
+            [ngModel]="form().enlace_afiliado"
+            (ngModelChange)="actualizarCampo('enlace_afiliado', $event)"
+            name="enlace_afiliado"
+          />
+        </label>
+        <p class="productos__hint">
+          En la tienda, este producto va a mostrar "Ver oferta en Amazon" en vez de
+          "Agregar al Carrito", y el aviso de afiliado obligatorio.
+        </p>
+      }
+
+      <div class="productos__form-actions">
+        <button type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+        <button type="button" class="secundario" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="productos__estado">Cargando...</p>
+  } @else if (productos().length === 0) {
+    <p class="productos__estado">No hay productos cargados todavía.</p>
+  } @else {
+    <div class="productos__tabla-wrap">
+      <table class="productos__tabla">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Marca</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (producto of productos(); track producto.id) {
+            <tr>
+              <td class="productos__miniatura">
+                @if (producto.imagen_url) {
+                  <img [src]="resolverImagenUrl(producto.imagen_url)" [alt]="producto.nombre" />
+                } @else {
+                  <span class="productos__miniatura-vacia">🛍️</span>
+                }
+              </td>
+              <td>
+                {{ producto.nombre }}
+                @if (producto.destacado) {
+                  <span class="productos__badge">Destacado</span>
+                }
+                @if (producto.es_afiliado) {
+                  <span class="productos__badge productos__badge--afiliado">Afiliado</span>
+                }
+              </td>
+              <td>{{ producto.categoria.nombre }}</td>
+              <td>{{ producto.marca.nombre }}</td>
+              <td>{{ producto.precio | number: '1.2-2' }}</td>
+              <td>{{ producto.stock }}</td>
+              <td>
+                <span [class.productos__inactivo]="!producto.activo">
+                  {{ producto.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="productos__acciones">
+                <button type="button" class="secundario" (click)="editar(producto)">Editar</button>
+                <button type="button" class="peligro" (click)="eliminar(producto)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

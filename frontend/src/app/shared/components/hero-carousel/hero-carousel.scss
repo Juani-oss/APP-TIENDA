@@ -1,0 +1,327 @@
+.hero-carousel {
+  position: relative;
+  margin-bottom: 1.75rem;
+
+  &__viewport {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    background: linear-gradient(
+      120deg,
+      var(--color-primary-light) 0%,
+      var(--color-bg) 55%,
+      var(--color-accent-light) 100%
+    );
+  }
+
+  // Manchas de color difuminadas, flotando muy lento — el "aire" del fondo
+  // clarito en vez del azul sólido de antes.
+  &__blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(48px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+
+    &--1 {
+      width: 22rem;
+      height: 22rem;
+      top: -8rem;
+      right: -6rem;
+      background: radial-gradient(circle, var(--color-primary-light), transparent 70%);
+      animation: hero-blob-flotar-1 14s ease-in-out infinite;
+    }
+
+    &--2 {
+      width: 16rem;
+      height: 16rem;
+      bottom: -6rem;
+      left: 10%;
+      background: radial-gradient(circle, var(--color-accent-light), transparent 70%);
+      animation: hero-blob-flotar-2 11s ease-in-out infinite;
+    }
+  }
+
+  &__track {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+
+  &__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding: clamp(2.25rem, 5vw, 3.75rem);
+    min-height: 380px;
+
+    &--fallback {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  &__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--color-primary-dark);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &__titulo {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    max-width: 30rem;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transition:
+      transform 0.15s ease,
+      background 0.15s ease;
+
+    &:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+    }
+  }
+
+  &__cta-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &__foto {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    justify-self: center;
+    width: 100%;
+    max-width: 24rem;
+  }
+
+  &__foto-marco {
+    aspect-ratio: 1 / 1;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: hero-foto-flotar 5s ease-in-out infinite;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 1.5rem;
+    }
+  }
+
+  &__foto-vacia {
+    font-size: 5rem;
+    opacity: 0.5;
+  }
+
+  &__precio-tag {
+    position: absolute;
+    left: 1.25rem;
+    bottom: -1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    padding: 0.65rem 1rem;
+    box-shadow: var(--shadow-lg);
+    max-width: calc(100% - 2.5rem);
+  }
+
+  &__precio-nombre {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__precio-valor {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-primary-dark);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 2.6rem;
+    height: 2.6rem;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    &--prev {
+      left: 1rem;
+    }
+
+    &--next {
+      right: 1rem;
+    }
+  }
+
+  &__dots {
+    position: absolute;
+    bottom: 1.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(33, 37, 41, 0.18);
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      transform 0.15s;
+
+    &:hover {
+      background: var(--color-primary-light);
+    }
+
+    &--activo {
+      background: var(--color-primary);
+      transform: scale(1.3);
+    }
+  }
+
+  @media (max-width: 720px) {
+    &__slide {
+      grid-template-columns: 1fr;
+      text-align: left;
+      padding-bottom: 3.5rem;
+    }
+
+    &__foto {
+      max-width: 16rem;
+      justify-self: start;
+    }
+
+    &__nav {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__blob,
+    &__foto-marco {
+      animation: none;
+    }
+  }
+}
+
+@keyframes hero-blob-flotar-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-1.5rem, 1.5rem) scale(1.08);
+  }
+}
+
+@keyframes hero-blob-flotar-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(1.2rem, -1rem) scale(1.1);
+  }
+}
+
+@keyframes hero-foto-flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.5rem);
+  }
+}

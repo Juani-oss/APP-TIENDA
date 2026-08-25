@@ -1,0 +1,23 @@
+<section class="marca-list">
+  <h1>Marcas</h1>
+
+  @if (cargando()) {
+    <p class="marca-list__estado">Cargando...</p>
+  } @else if (marcas().length === 0) {
+    <p class="marca-list__estado">No hay marcas cargadas todavía.</p>
+  } @else {
+    <div class="marca-list__grid">
+      @for (marca of marcas(); track marca.id) {
+        <a class="marca-list__item" [routerLink]="['/marcas', marca.id]">
+          @if (marca.logo_url) {
+            <img [src]="resolverImagenUrl(marca.logo_url)" [alt]="marca.nombre" />
+          }
+          <h3>{{ marca.nombre }}</h3>
+          @if (marca.descripcion) {
+            <p>{{ marca.descripcion }}</p>
+          }
+        </a>
+      }
+    </div>
+  }
+</section>

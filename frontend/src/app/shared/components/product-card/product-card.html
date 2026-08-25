@@ -1,0 +1,61 @@
+<article class="card">
+  <a class="card__link" [routerLink]="['/productos', producto().id]">
+    <div class="card__image" [class]="'card__image--' + categoriaIcono(producto().categoria.nombre)">
+      @if (producto().imagen_url) {
+        <img [src]="resolverImagenUrl(producto().imagen_url)" [alt]="producto().nombre" />
+      } @else {
+        <svg class="card__placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <use [attr.href]="'#' + categoriaIcono(producto().categoria.nombre)" />
+        </svg>
+      }
+      <div class="card__badges">
+        @if (producto().destacado) {
+          <span class="card__badge">Destacado</span>
+        }
+        @if (producto().es_afiliado) {
+          <span class="card__badge card__badge--afiliado">Amazon</span>
+        }
+        @if (descuento(); as pct) {
+          <span class="card__badge card__badge--descuento">-{{ pct }}%</span>
+        }
+      </div>
+    </div>
+
+    <div class="card__body">
+      <div class="card__precio-fila">
+        <p class="card__precio">{{ producto().precio | number: '1.2-2' }} USD</p>
+        @if (producto().precio_original) {
+          <span class="card__precio-original">{{ producto().precio_original | number: '1.2-2' }} USD</span>
+        }
+      </div>
+      <span class="card__marca">{{ producto().marca.nombre }}</span>
+      <h3 class="card__nombre">{{ producto().nombre }}</h3>
+      @if (producto().stock === 0) {
+        <span class="card__sin-stock">Sin stock</span>
+      }
+    </div>
+  </a>
+
+  @if (producto().es_afiliado) {
+    <a
+      class="card__add card__add--afiliado"
+      [href]="producto().enlace_afiliado"
+      target="_blank"
+      rel="noopener sponsored"
+      (click)="$event.stopPropagation()"
+    >
+      Ver oferta en Amazon
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 17L17 7M17 7H9M17 7v8" />
+      </svg>
+    </a>
+    <p class="card__disclosure">Como afiliados, ganamos por compras que califican.</p>
+  } @else if (configuracion.carritoHabilitado()) {
+    <button type="button" class="card__add" (click)="irAlCarrito($event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <use href="#i-cart" />
+      </svg>
+      Agregar al Carrito
+    </button>
+  }
+</article>

@@ -1,0 +1,91 @@
+.admin-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: var(--color-bg);
+
+  &__sidebar {
+    background: var(--color-text);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem 1rem;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__brand-logo {
+    height: 28px;
+    width: auto;
+    display: block;
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+
+    a {
+      color: var(--color-border);
+      text-decoration: none;
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+
+      &:hover {
+        background: #1f2937;
+        color: #fff;
+      }
+
+      &.active {
+        background: var(--color-primary);
+        color: #fff;
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid #374151;
+    padding-top: 1rem;
+  }
+
+  &__ver-tienda {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  &__footer button {
+    background: #374151;
+    color: #fff;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+
+    &:hover {
+      background: #4b5563;
+    }
+  }
+
+  &__content {
+    padding: 2rem;
+    overflow-x: auto;
+  }
+}

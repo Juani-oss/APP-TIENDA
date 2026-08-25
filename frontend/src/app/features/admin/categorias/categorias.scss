@@ -1,0 +1,67 @@
+@use '../../../shared/styles/admin-table' as admin;
+
+.categorias {
+  &__header {
+    @include admin.page-header;
+  }
+
+  &__header button {
+    @include admin.btn-primary;
+  }
+
+  &__error {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  &__form {
+    @include admin.form-card;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: 0.6rem;
+
+    button[type='submit'] {
+      @include admin.btn-primary;
+    }
+
+    .secundario {
+      @include admin.btn-secondary;
+    }
+  }
+
+  &__estado {
+    color: var(--color-text-muted);
+  }
+
+  &__tabla-wrap {
+    overflow-x: auto;
+  }
+
+  &__tabla {
+    @include admin.table-base;
+  }
+
+  &__acciones {
+    display: flex;
+    gap: 0.5rem;
+
+    .secundario {
+      @include admin.btn-secondary;
+    }
+
+    .peligro {
+      @include admin.btn-danger;
+    }
+  }
+}

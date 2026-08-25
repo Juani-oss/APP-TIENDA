@@ -1,0 +1,79 @@
+/* Estilos globales + design tokens de RomVal Store */
+
+:root {
+  /* Marca — misma línea de RomVal Store en toda la app (tienda + admin) */
+  --color-primary: #007bff;
+  --color-primary-dark: #0056b3;
+  --color-primary-light: #e7f2ff;
+  --color-accent: #ff6700;
+  --color-accent-dark: #d9560a;
+  --color-accent-light: #ffede1;
+
+  /* Superficies */
+  --color-bg: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-border: #e7eaee;
+
+  /* Texto */
+  --color-text: #212529;
+  --color-text-muted: #5b6472;
+  --color-text-faint: #8b93a1;
+  --color-text-on-primary: #ffffff;
+
+  /* Estado */
+  --color-success: #1e8e5a;
+  --color-success-bg: #e5f6ed;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+  --color-warning: #b45309;
+  --color-warning-bg: #fef3c7;
+  --color-star: #ffb400;
+
+  /* Forma */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgba(33, 37, 41, 0.05), 0 1px 1px rgba(33, 37, 41, 0.04);
+  --shadow-md: 0 10px 26px rgba(33, 37, 41, 0.09), 0 2px 6px rgba(33, 37, 41, 0.05);
+  --shadow-lg: 0 20px 48px rgba(0, 86, 179, 0.16), 0 4px 10px rgba(33, 37, 41, 0.06);
+
+  /* Tipografía */
+  --font-display: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+
+  --header-height: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+button {
+  font-family: inherit;
+}

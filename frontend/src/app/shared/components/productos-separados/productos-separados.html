@@ -1,0 +1,35 @@
+@if (propios().length > 0) {
+  <div class="productos-separados__bloque">
+    <h2 class="productos-separados__titulo">{{ tituloPropio() }}</h2>
+
+    @if (layout() === 'carousel') {
+      <app-product-carousel [productos]="propios()" />
+    } @else {
+      <div class="productos-separados__grid">
+        @for (p of propios(); track p.id) {
+          <app-product-card [producto]="p" />
+        }
+      </div>
+    }
+  </div>
+}
+
+@if (afiliados().length > 0) {
+  <div class="productos-separados__bloque">
+    <h2 class="productos-separados__titulo">
+      Recomendados de Amazon
+      <span class="productos-separados__badge">Amazon</span>
+    </h2>
+    <p class="productos-separados__nota">Como afiliados, ganamos por compras que califican.</p>
+
+    @if (layout() === 'carousel') {
+      <app-product-carousel [productos]="afiliados()" />
+    } @else {
+      <div class="productos-separados__grid">
+        @for (p of afiliados(); track p.id) {
+          <app-product-card [producto]="p" />
+        }
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,202 @@
+<section class="configuracion">
+  <h1>Configuración</h1>
+
+  @if (cargando()) {
+    <p class="configuracion__estado">Cargando configuración...</p>
+  } @else {
+    <div class="configuracion__card">
+      <div class="configuracion__card-texto">
+        <h2>Carrito de compras</h2>
+        <p>
+          Mostrá u ocultá el ícono y el acceso al carrito en la tienda. Todavía no hay
+          checkout implementado, así que mientras esté deshabilitado los clientes no van a
+          ver la opción en el header.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="switch"
+        role="switch"
+        [attr.aria-checked]="configuracion.carritoHabilitado()"
+        [class.switch--on]="configuracion.carritoHabilitado()"
+        [disabled]="guardando()"
+        (click)="toggleCarrito()"
+      >
+        <span class="switch__thumb"></span>
+      </button>
+    </div>
+
+    <p class="configuracion__estado-carrito">
+      Estado actual:
+      @if (configuracion.carritoHabilitado()) {
+        <span class="badge badge--on">Habilitado</span>
+      } @else {
+        <span class="badge badge--off">Deshabilitado</span>
+      }
+    </p>
+
+    <div class="configuracion__seccion">
+      <h2>Envío desde EEUU (casillero)</h2>
+      <p class="configuracion__seccion-hint">
+        El cliente compra el producto directo en Amazon (seguís ganando tu comisión de
+        afiliado), pero lo envía a esta dirección en vez de a la suya. Vos cotizás el tramo
+        EEUU → Ecuador aparte, más barato que el envío internacional directo de Amazon. Esta
+        info solo se muestra en la tienda si activás el interruptor de abajo.
+      </p>
+
+      <label>
+        Nombre del destinatario / casillero
+        <input
+          type="text"
+          placeholder="Ej: RomVal Store - Casillero 12345"
+          [ngModel]="formCasillero().casillero_nombre"
+          (ngModelChange)="actualizarCampoCasillero('casillero_nombre', $event)"
+          name="casillero_nombre"
+        />
+      </label>
+
+      <label>
+        Dirección (línea 1)
+        <input
+          type="text"
+          placeholder="Ej: 8200 NW 27th St"
+          [ngModel]="formCasillero().casillero_direccion_linea1"
+          (ngModelChange)="actualizarCampoCasillero('casillero_direccion_linea1', $event)"
+          name="casillero_direccion_linea1"
+        />
+      </label>
+
+      <label>
+        Dirección (línea 2 — suite/código de casillero, si aplica)
+        <input
+          type="text"
+          placeholder="Ej: Suite 105 / Casillero #12345"
+          [ngModel]="formCasillero().casillero_direccion_linea2"
+          (ngModelChange)="actualizarCampoCasillero('casillero_direccion_linea2', $event)"
+          name="casillero_direccion_linea2"
+        />
+      </label>
+
+      <div class="configuracion__grid3">
+        <label>
+          Ciudad
+          <input
+            type="text"
+            placeholder="Ej: Doral"
+            [ngModel]="formCasillero().casillero_ciudad"
+            (ngModelChange)="actualizarCampoCasillero('casillero_ciudad', $event)"
+            name="casillero_ciudad"
+          />
+        </label>
+
+        <label>
+          Estado
+          <input
+            type="text"
+            placeholder="Ej: FL"
+            [ngModel]="formCasillero().casillero_estado"
+            (ngModelChange)="actualizarCampoCasillero('casillero_estado', $event)"
+            name="casillero_estado"
+          />
+        </label>
+
+        <label>
+          Código postal
+          <input
+            type="text"
+            placeholder="Ej: 33122"
+            [ngModel]="formCasillero().casillero_cp"
+            (ngModelChange)="actualizarCampoCasillero('casillero_cp', $event)"
+            name="casillero_cp"
+          />
+        </label>
+      </div>
+
+      <label>
+        Notas para el cliente (opcional)
+        <textarea
+          rows="2"
+          placeholder="Ej: Poné siempre tu código de casillero en la línea 2, si no el paquete no se puede identificar."
+          [ngModel]="formCasillero().casillero_notas"
+          (ngModelChange)="actualizarCampoCasillero('casillero_notas', $event)"
+          name="casillero_notas"
+        ></textarea>
+      </label>
+
+      <label class="configuracion__check-row">
+        <input
+          type="checkbox"
+          [ngModel]="formCasillero().envio_casillero_habilitado"
+          (ngModelChange)="actualizarCampoCasillero('envio_casillero_habilitado', $event)"
+          name="envio_casillero_habilitado"
+        />
+        Mostrar esta información en la tienda (productos de Amazon)
+      </label>
+
+      <button
+        type="button"
+        class="configuracion__btn-guardar"
+        [disabled]="guardandoCasillero()"
+        (click)="guardarCasillero()"
+      >
+        @if (guardandoCasillero()) {
+          Guardando...
+        } @else if (casilleroGuardado()) {
+          ✓ Guardado
+        } @else {
+          Guardar dirección
+        }
+      </button>
+    </div>
+
+    <div class="configuracion__seccion">
+      <h2>Redes sociales</h2>
+      <p class="configuracion__seccion-hint">
+        Se muestran como íconos en el pie de página de la tienda. Dejá el campo vacío para no
+        mostrar ese ícono.
+      </p>
+
+      <label>
+        Instagram (link completo)
+        <input
+          type="url"
+          placeholder="https://instagram.com/romvalstore"
+          [ngModel]="formRedes().instagram_url"
+          (ngModelChange)="actualizarCampoRedes('instagram_url', $event)"
+          name="instagram_url"
+        />
+      </label>
+
+      <label>
+        Facebook (link completo)
+        <input
+          type="url"
+          placeholder="https://facebook.com/romvalstore"
+          [ngModel]="formRedes().facebook_url"
+          (ngModelChange)="actualizarCampoRedes('facebook_url', $event)"
+          name="facebook_url"
+        />
+      </label>
+
+      <button
+        type="button"
+        class="configuracion__btn-guardar"
+        [disabled]="guardandoRedes()"
+        (click)="guardarRedes()"
+      >
+        @if (guardandoRedes()) {
+          Guardando...
+        } @else if (redesGuardadas()) {
+          ✓ Guardado
+        } @else {
+          Guardar redes sociales
+        }
+      </button>
+    </div>
+
+    @if (error()) {
+      <p class="configuracion__error">{{ error() }}</p>
+    }
+  }
+</section>

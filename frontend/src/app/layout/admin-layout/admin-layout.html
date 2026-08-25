@@ -1,0 +1,21 @@
+<div class="admin-layout">
+  <aside class="admin-layout__sidebar">
+    <div class="admin-layout__brand"><img src="/logo-icon.png" alt="RomVal Store" class="admin-layout__brand-logo"> Admin</div>
+    <nav class="admin-layout__nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/admin/productos" routerLinkActive="active">Productos</a>
+      <a routerLink="/admin/categorias" routerLinkActive="active">Categorías</a>
+      <a routerLink="/admin/marcas" routerLinkActive="active">Marcas</a>
+      <a routerLink="/admin/comentarios" routerLinkActive="active">Comentarios</a>
+      <a routerLink="/admin/configuracion" routerLinkActive="active">Configuración</a>
+    </nav>
+    <div class="admin-layout__footer">
+      <a routerLink="/" class="admin-layout__ver-tienda">Ver tienda</a>
+      <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="admin-layout__content">
+    <router-outlet />
+  </main>
+</div>

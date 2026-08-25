@@ -1,0 +1,18 @@
+<section class="categoria-productos">
+  @if (categoria(); as cat) {
+    <h1>{{ cat.nombre }}</h1>
+    @if (cat.descripcion) {
+      <p class="categoria-productos__descripcion">{{ cat.descripcion }}</p>
+    }
+  }
+
+  @if (cargando()) {
+    <p class="categoria-productos__estado">Cargando productos...</p>
+  } @else if (error()) {
+    <p class="categoria-productos__estado categoria-productos__estado--error">{{ error() }}</p>
+  } @else if (productos().length === 0) {
+    <p class="categoria-productos__estado">No hay productos en esta categoría todavía.</p>
+  } @else {
+    <app-productos-separados [productos]="productos()" />
+  }
+</section>

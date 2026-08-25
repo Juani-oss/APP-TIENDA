@@ -1,0 +1,36 @@
+<section class="dashboard">
+  <h1>Dashboard</h1>
+
+  @if (cargando()) {
+    <p class="dashboard__estado">Cargando estadísticas...</p>
+  } @else if (stats(); as s) {
+    <div class="dashboard__grid">
+      <a class="dashboard__card" routerLink="/admin/productos">
+        <span class="dashboard__valor">{{ s.total_productos }}</span>
+        <span class="dashboard__label">Productos</span>
+      </a>
+
+      <a class="dashboard__card" routerLink="/admin/categorias">
+        <span class="dashboard__valor">{{ s.total_categorias }}</span>
+        <span class="dashboard__label">Categorías</span>
+      </a>
+
+      <a class="dashboard__card" routerLink="/admin/marcas">
+        <span class="dashboard__valor">{{ s.total_marcas }}</span>
+        <span class="dashboard__label">Marcas</span>
+      </a>
+
+      <a class="dashboard__card dashboard__card--alerta" routerLink="/admin/productos">
+        <span class="dashboard__valor">{{ s.productos_sin_stock }}</span>
+        <span class="dashboard__label">Sin stock</span>
+      </a>
+
+      <a class="dashboard__card dashboard__card--alerta" routerLink="/admin/comentarios">
+        <span class="dashboard__valor">{{ s.comentarios_pendientes }}</span>
+        <span class="dashboard__label">Comentarios pendientes</span>
+      </a>
+    </div>
+  } @else {
+    <p class="dashboard__estado">No se pudieron cargar las estadísticas.</p>
+  }
+</section>

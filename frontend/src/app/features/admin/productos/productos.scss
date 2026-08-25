@@ -1,0 +1,212 @@
+@use '../../../shared/styles/admin-table' as admin;
+
+.productos {
+  &__header {
+    @include admin.page-header;
+  }
+
+  &__header button {
+    @include admin.btn-primary;
+  }
+
+  &__error {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  &__form {
+    @include admin.form-card;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: 0.6rem;
+
+    button[type='submit'] {
+      @include admin.btn-primary;
+    }
+
+    .secundario {
+      @include admin.btn-secondary;
+    }
+  }
+
+  &__estado {
+    color: var(--color-text-muted);
+  }
+
+  &__subiendo {
+    margin: -0.4rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  &__preview {
+    img {
+      max-width: 140px;
+      max-height: 100px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+    }
+  }
+
+  &__miniatura {
+    width: 56px;
+
+    img {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      display: block;
+    }
+  }
+
+  &__miniatura-vacia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--color-bg);
+    border-radius: var(--radius-sm);
+    font-size: 1.2rem;
+  }
+
+  &__tabla-wrap {
+    overflow-x: auto;
+  }
+
+  &__tabla {
+    @include admin.table-base;
+  }
+
+  &__badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+
+    &--afiliado {
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+    }
+  }
+
+  &__hint {
+    margin: -0.5rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  &__inactivo {
+    color: var(--color-text-muted);
+  }
+
+  &__seccion {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  &__seccion-titulo {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+
+  &__galeria {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__galeria-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: center;
+
+    img {
+      width: 84px;
+      height: 84px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+    }
+  }
+
+  &__galeria-acciones {
+    display: flex;
+    gap: 0.3rem;
+
+    button {
+      @include admin.btn-secondary;
+      padding: 0.2rem 0.5rem;
+      line-height: 1;
+    }
+
+    .peligro {
+      @include admin.btn-danger;
+      padding: 0.2rem 0.5rem;
+    }
+  }
+
+  &__caracteristicas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__caracteristica-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr auto;
+    gap: 0.5rem;
+
+    input {
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+    }
+
+    .peligro {
+      @include admin.btn-danger;
+    }
+  }
+
+  &__seccion > .secundario {
+    @include admin.btn-secondary;
+    align-self: flex-start;
+  }
+
+  &__acciones {
+    display: flex;
+    gap: 0.5rem;
+
+    .secundario {
+      @include admin.btn-secondary;
+    }
+
+    .peligro {
+      @include admin.btn-danger;
+    }
+  }
+}

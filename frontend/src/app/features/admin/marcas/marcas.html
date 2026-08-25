@@ -1,0 +1,120 @@
+<section class="marcas">
+  <div class="marcas__header">
+    <h1>Marcas</h1>
+    <button type="button" (click)="abrirNuevo()">+ Nueva marca</button>
+  </div>
+
+  @if (error()) {
+    <p class="marcas__error">{{ error() }}</p>
+  }
+
+  @if (mostrarForm()) {
+    <form class="marcas__form" (ngSubmit)="guardar()">
+      <h3>{{ editandoId() ? 'Editar marca' : 'Nueva marca' }}</h3>
+
+      <label>
+        Nombre
+        <input
+          type="text"
+          [ngModel]="form().nombre"
+          (ngModelChange)="actualizarCampo('nombre', $event); autoSlug()"
+          name="nombre"
+          required
+        />
+      </label>
+
+      <label>
+        Slug
+        <input
+          type="text"
+          [ngModel]="form().slug"
+          (ngModelChange)="actualizarCampo('slug', $event)"
+          name="slug"
+          required
+        />
+      </label>
+
+      <label>
+        Logo
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" (change)="onArchivoSeleccionado($event)" />
+      </label>
+
+      @if (subiendoImagen()) {
+        <p class="marcas__subiendo">Subiendo logo...</p>
+      }
+
+      @if (form().logo_url) {
+        <div class="marcas__preview">
+          <img [src]="resolverImagenUrl(form().logo_url)" alt="Vista previa del logo" />
+        </div>
+      }
+
+      <label>
+        URL de logo (opcional, si no subís un archivo)
+        <input
+          type="text"
+          [ngModel]="form().logo_url"
+          (ngModelChange)="actualizarCampo('logo_url', $event)"
+          name="logo_url"
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          rows="2"
+          [ngModel]="form().descripcion"
+          (ngModelChange)="actualizarCampo('descripcion', $event)"
+          name="descripcion"
+        ></textarea>
+      </label>
+
+      <div class="marcas__form-actions">
+        <button type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+        <button type="button" class="secundario" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="marcas__estado">Cargando...</p>
+  } @else if (marcas().length === 0) {
+    <p class="marcas__estado">No hay marcas cargadas todavía.</p>
+  } @else {
+    <div class="marcas__tabla-wrap">
+      <table class="marcas__tabla">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th>Slug</th>
+            <th>Descripción</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (marca of marcas(); track marca.id) {
+            <tr>
+              <td class="marcas__miniatura">
+                @if (marca.logo_url) {
+                  <img [src]="resolverImagenUrl(marca.logo_url)" [alt]="marca.nombre" />
+                } @else {
+                  <span class="marcas__miniatura-vacia">🏷️</span>
+                }
+              </td>
+              <td>{{ marca.nombre }}</td>
+              <td>{{ marca.slug }}</td>
+              <td>{{ marca.descripcion || '—' }}</td>
+              <td class="marcas__acciones">
+                <button type="button" class="secundario" (click)="editar(marca)">Editar</button>
+                <button type="button" class="peligro" (click)="eliminar(marca)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,113 @@
+<header class="navbar">
+  <div class="navbar__main">
+    <a routerLink="/" class="navbar__brand">
+      <img src="/logo.png" alt="RomVal Store" class="navbar__brand-logo">
+    </a>
+
+    <form class="navbar__search" (ngSubmit)="buscar()">
+      <select
+        class="navbar__search-cat"
+        name="categoriaBusqueda"
+        [(ngModel)]="categoriaBusqueda"
+        aria-label="Categoría de búsqueda"
+      >
+        <option value="">Todas las categorías</option>
+        @for (categoria of categorias(); track categoria.id) {
+          <option [value]="categoria.slug">{{ categoria.nombre }}</option>
+        }
+      </select>
+      <input
+        type="search"
+        name="q"
+        placeholder="Buscar productos, marcas y más..."
+        [(ngModel)]="query"
+        aria-label="Buscar productos"
+      />
+      <button type="submit" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" />
+        </svg>
+      </button>
+    </form>
+
+    <div class="navbar__actions">
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/admin" class="navbar__action">
+          <svg class="navbar__action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M4.5 20c0-3.5 3.2-6 7.5-6s7.5 2.5 7.5 6" />
+          </svg>
+          <span class="navbar__action-text">
+            <small>Hola,</small>
+            Admin
+          </span>
+        </a>
+      } @else {
+        <a routerLink="/login" class="navbar__action">
+          <svg class="navbar__action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M4.5 20c0-3.5 3.2-6 7.5-6s7.5 2.5 7.5 6" />
+          </svg>
+          <span class="navbar__action-text">
+            <small>Ingresá</small>
+            Cuenta
+          </span>
+        </a>
+      }
+
+      @if (configuracion.carritoHabilitado()) {
+        <a routerLink="/carrito" routerLinkActive="navbar__action--activa" class="navbar__action">
+          <span class="navbar__cart-icon-wrap">
+            <svg class="navbar__action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9.5" cy="20.5" r="1.3" />
+              <circle cx="18" cy="20.5" r="1.3" />
+              <path d="M2.5 3.5h2.4l2.2 12.1a2 2 0 0 0 2 1.65h8.6a2 2 0 0 0 2-1.6l1.6-8.15H6" />
+            </svg>
+            @if (carritoDemo.cantidad() > 0) {
+              <span class="navbar__cart-badge">{{ carritoDemo.cantidad() }}</span>
+            }
+          </span>
+          <span class="navbar__action-text">
+            <small>Mi</small>
+            Carrito
+          </span>
+        </a>
+      }
+    </div>
+  </div>
+
+  <nav class="navbar__deptos">
+    <div class="navbar__deptos-inner">
+      <div class="navbar__depto-toggle-wrap">
+        <button type="button" class="navbar__depto-toggle" (click)="toggleCategorias($event)">
+          <span class="navbar__depto-icon">☰</span>
+          Categorías
+          <span class="navbar__caret" [class.navbar__caret--abierta]="categoriasAbiertas()">▾</span>
+        </button>
+
+        @if (categoriasAbiertas()) {
+          <div class="navbar__cat-panel" (click)="$event.stopPropagation()">
+            @for (categoria of categorias(); track categoria.id) {
+              <a [routerLink]="['/categorias', categoria.id]" (click)="cerrarCategorias()">
+                {{ categoria.nombre }}
+              </a>
+            }
+            @if (categorias().length === 0) {
+              <span class="navbar__cat-vacio">Sin categorías todavía</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="navbar__deptos-scroll">
+        @for (categoria of categorias(); track categoria.id) {
+          <a [routerLink]="['/categorias', categoria.id]" routerLinkActive="active" class="navbar__depto-link">
+            {{ categoria.nombre }}
+          </a>
+        }
+
+        <a routerLink="/marcas" routerLinkActive="active" class="navbar__depto-link">Marcas</a>
+      </div>
+    </div>
+  </nav>
+</header>

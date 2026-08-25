@@ -1,0 +1,27 @@
+.buscar {
+  h1 {
+    margin-bottom: 0.25rem;
+    font-size: 1.3rem;
+  }
+
+  &__cantidad {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    margin: 0 0 1.25rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1.75rem;
+  }
+
+  &__estado {
+    color: var(--color-text-muted);
+    padding: 2rem 0;
+
+    &--error {
+      color: var(--color-danger);
+    }
+  }
+}

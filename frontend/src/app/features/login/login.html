@@ -1,0 +1,38 @@
+<section class="login">
+  <form class="login__card" (ngSubmit)="enviar()">
+    <h1>Ingresar</h1>
+    <p class="login__subtitulo">Acceso para administradores</p>
+
+    @if (error()) {
+      <p class="login__error">{{ error() }}</p>
+    }
+
+    <label>
+      Email
+      <input
+        type="email"
+        name="email"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        required
+        autocomplete="email"
+      />
+    </label>
+
+    <label>
+      Contraseña
+      <input
+        type="password"
+        name="password"
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+        required
+        autocomplete="current-password"
+      />
+    </label>
+
+    <button type="submit" [disabled]="cargando()">
+      {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+  </form>
+</section>

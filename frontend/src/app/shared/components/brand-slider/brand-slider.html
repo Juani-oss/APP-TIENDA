@@ -1,0 +1,15 @@
+@if (marcas().length > 0) {
+  <div class="brand-slider">
+    <div class="brand-slider__track" [style.--brand-count]="marcas().length">
+      @for (marca of loopMarcas(); track $index) {
+        <a class="brand-slider__item" [routerLink]="['/marcas', marca.id]" [title]="marca.nombre">
+          @if (marca.logo_url) {
+            <img [src]="resolverImagenUrl(marca.logo_url)" [alt]="marca.nombre" />
+          } @else {
+            <span class="brand-slider__nombre">{{ marca.nombre }}</span>
+          }
+        </a>
+      }
+    </div>
+  </div>
+}

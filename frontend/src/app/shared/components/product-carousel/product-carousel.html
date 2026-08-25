@@ -1,0 +1,29 @@
+@if (productos().length > 0) {
+  <div class="product-carousel">
+    <button
+      type="button"
+      class="product-carousel__arrow product-carousel__arrow--prev"
+      aria-label="Anterior"
+      (click)="scrollPrev()"
+    >
+      ‹
+    </button>
+
+    <div class="product-carousel__track" #track>
+      @for (producto of productos(); track producto.id) {
+        <div class="product-carousel__item">
+          <app-product-card [producto]="producto" />
+        </div>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="product-carousel__arrow product-carousel__arrow--next"
+      aria-label="Siguiente"
+      (click)="scrollNext()"
+    >
+      ›
+    </button>
+  </div>
+}

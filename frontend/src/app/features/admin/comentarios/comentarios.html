@@ -1,0 +1,57 @@
+<section class="comentarios">
+  <div class="comentarios__header">
+    <h1>Comentarios</h1>
+    <div class="comentarios__filtros">
+      <button
+        type="button"
+        [class.activo]="filtro() === 'pendientes'"
+        (click)="cambiarFiltro('pendientes')"
+      >
+        Pendientes
+      </button>
+      <button
+        type="button"
+        [class.activo]="filtro() === 'aprobados'"
+        (click)="cambiarFiltro('aprobados')"
+      >
+        Aprobados
+      </button>
+      <button type="button" [class.activo]="filtro() === 'todos'" (click)="cambiarFiltro('todos')">
+        Todos
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="comentarios__error">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="comentarios__estado">Cargando...</p>
+  } @else if (comentarios().length === 0) {
+    <p class="comentarios__estado">No hay comentarios en esta vista.</p>
+  } @else {
+    <ul class="comentarios__lista">
+      @for (comentario of comentarios(); track comentario.id) {
+        <li>
+          <div class="comentarios__info">
+            <div class="comentarios__cabecera">
+              <strong>{{ comentario.autor }}</strong>
+              <span class="comentarios__estrellas">{{ estrellas(comentario.calificacion) }}</span>
+              @if (!comentario.aprobado) {
+                <span class="comentarios__pendiente">Pendiente</span>
+              }
+            </div>
+            <p>{{ comentario.contenido }}</p>
+          </div>
+          <div class="comentarios__acciones">
+            @if (!comentario.aprobado) {
+              <button type="button" class="aprobar" (click)="aprobar(comentario)">Aprobar</button>
+            }
+            <button type="button" class="peligro" (click)="eliminar(comentario)">Eliminar</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

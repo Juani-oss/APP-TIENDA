@@ -1,0 +1,28 @@
+<section class="home">
+  <app-hero-carousel [productos]="destacados()" />
+
+  @if (marcas().length > 0) {
+    <div class="home__seccion" appScrollReveal>
+      <div class="home__seccion-header">
+        <h2>Nuestras marcas</h2>
+      </div>
+      <app-brand-slider [marcas]="marcas()" />
+    </div>
+  }
+
+  @if (cargando()) {
+    <p class="home__estado">Cargando productos...</p>
+  } @else if (error()) {
+    <p class="home__estado home__estado--error">{{ error() }}</p>
+  } @else if (novedades().length === 0) {
+    <p class="home__estado">Todavía no hay productos cargados.</p>
+  } @else {
+    <div class="home__seccion" appScrollReveal>
+      <app-productos-separados
+        [productos]="novedades()"
+        layout="carousel"
+        tituloPropio="🆕 Novedades"
+      />
+    </div>
+  }
+</section>
