@@ -1,0 +1,79 @@
+@use '../../../shared/styles/admin-table' as admin;
+
+.usuarios {
+  &__header {
+    @include admin.page-header;
+  }
+
+  &__header button {
+    @include admin.btn-primary;
+  }
+
+  &__hint {
+    margin: -0.5rem 0 1.25rem;
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+  }
+
+  &__error {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  &__ok {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  &__form {
+    @include admin.form-card;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: 0.6rem;
+
+    button[type='submit'] {
+      @include admin.btn-primary;
+    }
+
+    .secundario {
+      @include admin.btn-secondary;
+    }
+  }
+
+  &__estado {
+    color: var(--color-text-muted);
+  }
+
+  &__tabla-wrap {
+    overflow-x: auto;
+  }
+
+  &__tabla {
+    @include admin.table-base;
+  }
+
+  &__badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+  }
+}

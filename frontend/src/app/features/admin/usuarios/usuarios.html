@@ -1,0 +1,97 @@
+<section class="usuarios">
+  <div class="usuarios__header">
+    <h1>Usuarios</h1>
+    <button type="button" (click)="abrirNuevo()">+ Nuevo administrador</button>
+  </div>
+
+  <p class="usuarios__hint">
+    Todos los usuarios que crees acá tienen acceso total al panel de admin, igual que vos.
+  </p>
+
+  @if (error()) {
+    <p class="usuarios__error">{{ error() }}</p>
+  }
+
+  @if (creado()) {
+    <p class="usuarios__ok">✓ Usuario creado. Ya puede entrar con el email y contraseña que cargaste.</p>
+  }
+
+  @if (mostrarForm()) {
+    <form class="usuarios__form" (ngSubmit)="guardar()">
+      <h3>Nuevo administrador</h3>
+
+      <label>
+        Nombre
+        <input
+          type="text"
+          [ngModel]="form().nombre"
+          (ngModelChange)="actualizarCampo('nombre', $event)"
+          name="nombre"
+          required
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          [ngModel]="form().email"
+          (ngModelChange)="actualizarCampo('email', $event)"
+          name="email"
+          required
+        />
+      </label>
+
+      <label>
+        Contraseña (mínimo 8 caracteres)
+        <input
+          type="password"
+          [ngModel]="form().password"
+          (ngModelChange)="actualizarCampo('password', $event)"
+          name="password"
+          required
+          minlength="8"
+        />
+      </label>
+
+      <div class="usuarios__form-actions">
+        <button type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Creando...' : 'Crear administrador' }}
+        </button>
+        <button type="button" class="secundario" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p class="usuarios__estado">Cargando...</p>
+  } @else if (admins().length === 0) {
+    <p class="usuarios__estado">Todavía no hay administradores cargados.</p>
+  } @else {
+    <div class="usuarios__tabla-wrap">
+      <table class="usuarios__tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Rol</th>
+            <th>Alta</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (admin of admins(); track admin.id) {
+            <tr>
+              <td>
+                {{ admin.nombre }}
+                @if (admin.id === auth.user()?.id) {
+                  <span class="usuarios__badge">Vos</span>
+                }
+              </td>
+              <td>{{ admin.rol }}</td>
+              <td>{{ admin.created_at | date: 'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
