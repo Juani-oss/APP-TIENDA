@@ -461,6 +461,35 @@
     color: var(--color-text);
   }
 
+  &__estrellas-input {
+    display: flex;
+    gap: 0.2rem;
+
+    // Selector calificado dos veces a propósito: el "button { ... }"
+    // genérico de más abajo también aplica a estos botones, y con la
+    // misma cantidad de clases le gana por tener además un selector de
+    // elemento. Esto asegura que el estilo de estrella sea el que gane.
+    .comentarios__estrella-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 1.7rem;
+      line-height: 1;
+      color: var(--color-border);
+      cursor: pointer;
+      transition: color 0.12s ease, transform 0.1s ease;
+
+      &:hover:not(:disabled) {
+        background: none;
+        transform: scale(1.1);
+      }
+
+      &.comentarios__estrella-btn--activa {
+        color: var(--color-accent-dark);
+      }
+    }
+  }
+
   input,
   select,
   textarea {

@@ -223,15 +223,20 @@
 
         <label>
           Calificación
-          <select
-            name="calificacion"
-            [ngModel]="calificacion()"
-            (ngModelChange)="calificacion.set($event)"
-          >
-            @for (n of [5, 4, 3, 2, 1]; track n) {
-              <option [value]="n">{{ n }} estrellas</option>
+          <div class="comentarios__estrellas-input" role="radiogroup" aria-label="Calificación">
+            @for (n of [1, 2, 3, 4, 5]; track n) {
+              <button
+                type="button"
+                class="comentarios__estrella-btn"
+                [class.comentarios__estrella-btn--activa]="n <= (calificacionHover() || calificacion())"
+                [attr.aria-pressed]="n === calificacion()"
+                [attr.aria-label]="n + ' estrella' + (n > 1 ? 's' : '')"
+                (click)="calificacion.set(n)"
+                (mouseenter)="calificacionHover.set(n)"
+                (mouseleave)="calificacionHover.set(0)"
+              >★</button>
             }
-          </select>
+          </div>
         </label>
 
         <label>

@@ -71,6 +71,8 @@ export class ProductoDetalle {
   readonly autor = signal('');
   readonly contenido = signal('');
   readonly calificacion = signal(5);
+  /** Estrella bajo el cursor, solo para la vista previa al pasar el mouse. */
+  readonly calificacionHover = signal(0);
   /** Honeypot: un humano nunca lo completa, solo los bots de spam. */
   readonly honeypot = signal('');
   readonly enviandoComentario = signal(false);
