@@ -51,13 +51,19 @@ export class AuthService {
     void this.supabase.auth.signOut();
   }
 
-  /** Solo hay "perfil" (fila en public.perfiles) para los admins de la tienda. */
+  /**
+   * Solo hay "perfil" (fila en public.perfiles) para los admins de la tienda.
+   * Si el login de Supabase Auth funcionó pero no hay perfil de admin, cierra
+   * la sesión igual — no queremos dejar una sesión autenticada a medias
+   * colgada en el navegador de alguien sin acceso.
+   */
   private cargarPerfil(id: string, email: string): Observable<Usuario> {
     return from(
       this.supabase.from('perfiles').select('nombre, rol').eq('id', id).single()
     ).pipe(
       map(({ data, error }) => {
-        if (error || !data) {
+        if (error || !data || data['rol'] !== 'admin') {
+          void this.supabase.auth.signOut();
           throw error ?? new Error('No tenés acceso de administrador.');
         }
         const usuario: Usuario = {

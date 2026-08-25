@@ -6,15 +6,18 @@ import { AuthService } from '../services/auth.service';
 
 /**
  * Permite el acceso solo si hay un admin autenticado (sesión de Supabase Auth
- * con una fila correspondiente en public.perfiles).
+ * con una fila en public.perfiles con rol='admin'). Chequea isAdmin de forma
+ * explícita — no alcanza con "hay sesión" — así que si algún día se agrega
+ * un rol no-admin en perfiles, esos usuarios no ven ni el shell del panel,
+ * aunque las políticas de RLS ya les bloquean los datos igual.
  */
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
   if (auth.isAuthenticated()) {
-    return true;
+    return auth.isAdmin() || router.createUrlTree(['/login']);
   }
 
-  return auth.verificarSesion().pipe(map((ok) => ok || router.createUrlTree(['/login'])));
+  return auth.verificarSesion().pipe(map(() => auth.isAdmin() || router.createUrlTree(['/login'])));
 };
