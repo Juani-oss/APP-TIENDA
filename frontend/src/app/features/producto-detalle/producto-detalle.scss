@@ -229,12 +229,6 @@
     }
   }
 
-  &__descripcion {
-    margin-top: 1rem;
-    color: var(--color-text);
-    line-height: 1.6;
-  }
-
   &__disclosure {
     margin-top: 0.6rem;
     font-size: 0.76rem;
@@ -292,48 +286,55 @@
   }
 }
 
-.ficha-tecnica {
+.detalles {
   margin-top: 2.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
 
   h2 {
     font-size: 1.15rem;
     margin: 0 0 1rem;
   }
 
+  &__descripcion {
+    margin: 0 0 1.25rem;
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+
   &__lista {
+    list-style: none;
     margin: 0;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-  }
-
-  &__fila {
+    padding: 0;
     display: grid;
-    grid-template-columns: minmax(160px, 1fr) 2fr;
-    gap: 1rem;
-    padding: 0.7rem 1rem;
-    font-size: 0.88rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem 1.5rem;
 
-    &:nth-child(odd) {
-      background: var(--color-bg);
-    }
-
-    dt {
-      font-weight: 700;
-      color: var(--color-text);
-    }
-
-    dd {
-      margin: 0;
-      color: var(--color-text-muted);
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
     }
   }
 
-  @media (max-width: 560px) {
-    &__fila {
-      grid-template-columns: 1fr;
-      gap: 0.2rem;
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--color-text);
+
+    svg {
+      flex-shrink: 0;
+      width: 19px;
+      height: 19px;
+      margin-top: 0.15rem;
+      color: var(--color-primary);
+    }
+
+    strong {
+      font-weight: 700;
     }
   }
 }

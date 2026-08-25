@@ -144,24 +144,32 @@
           </div>
         }
       }
-
-      @if (p.descripcion) {
-        <p class="detalle__descripcion">{{ p.descripcion }}</p>
-      }
     </div>
   </section>
 
-  @if (p.caracteristicas.length > 0) {
-    <section class="ficha-tecnica">
-      <h2>Características</h2>
-      <dl class="ficha-tecnica__lista">
-        @for (c of p.caracteristicas; track c.id) {
-          <div class="ficha-tecnica__fila">
-            <dt>{{ c.clave }}</dt>
-            <dd>{{ c.valor }}</dd>
-          </div>
-        }
-      </dl>
+  @if (p.descripcion || p.caracteristicas.length > 0) {
+    <section class="detalles">
+      <h2>Detalles del producto</h2>
+
+      @if (p.descripcion) {
+        <p class="detalles__descripcion">{{ p.descripcion }}</p>
+      }
+
+      @if (p.caracteristicas.length > 0) {
+        <ul class="detalles__lista">
+          @for (c of p.caracteristicas; track c.id) {
+            <li class="detalles__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <use href="#i-check" />
+              </svg>
+              <span>
+                <strong>{{ c.clave }}:</strong>
+                {{ c.valor }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
     </section>
   }
 
