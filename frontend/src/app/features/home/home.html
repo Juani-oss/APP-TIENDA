@@ -14,15 +14,17 @@
     <p class="home__estado">Cargando productos...</p>
   } @else if (error()) {
     <p class="home__estado home__estado--error">{{ error() }}</p>
-  } @else if (novedades().length === 0) {
+  } @else if (gruposPorCategoria().length === 0) {
     <p class="home__estado">Todavía no hay productos cargados.</p>
   } @else {
-    <div class="home__seccion" appScrollReveal>
-      <app-productos-separados
-        [productos]="novedades()"
-        layout="carousel"
-        tituloPropio="🆕 Novedades"
-      />
-    </div>
+    @for (grupo of gruposPorCategoria(); track grupo.categoriaId) {
+      <div class="home__seccion" appScrollReveal>
+        <app-productos-separados
+          [productos]="grupo.productos"
+          layout="carousel"
+          [tituloPropio]="grupo.nombre"
+        />
+      </div>
+    }
   }
 </section>
