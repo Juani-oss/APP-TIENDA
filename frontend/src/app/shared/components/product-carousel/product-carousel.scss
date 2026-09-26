@@ -19,7 +19,13 @@
   }
 
   &__item {
-    flex: 0 0 270px;
+    // flex-grow reparte el espacio sobrante cuando las tarjetas alcanzan a
+    // entrar todas en el ancho disponible (en vez de dejar hueco vacío);
+    // min-width evita que se encojan de más cuando no entran todas, así se
+    // sigue activando el scroll horizontal del carrusel como antes.
+    flex: 1 1 270px;
+    min-width: 270px;
+    max-width: 340px;
     scroll-snap-align: start;
   }
 
