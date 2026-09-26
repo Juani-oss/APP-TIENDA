@@ -4,6 +4,7 @@ import { Observable, from, map } from 'rxjs';
 import {
   Producto,
   ProductoCaracteristicaInput,
+  ProductoColorInput,
   ProductoFiltros,
   ProductoImagenInput,
   ProductoInput,
@@ -12,7 +13,7 @@ import { supabaseObservable } from '../utils/supabase-query';
 import { SupabaseClientService } from './supabase-client.service';
 
 const SELECT_CON_RELACIONES =
-  '*, categoria:categorias(*), marca:marcas(*), imagenes:producto_imagenes(*), caracteristicas:producto_caracteristicas(*)';
+  '*, categoria:categorias(*), marca:marcas(*), imagenes:producto_imagenes(*), caracteristicas:producto_caracteristicas(*), colores:producto_colores(*)';
 
 /** PostgREST no garantiza el orden de las relaciones embebidas: se ordena acá. */
 function ordenarListas(producto: Producto): Producto {
@@ -20,6 +21,7 @@ function ordenarListas(producto: Producto): Producto {
     ...producto,
     imagenes: [...producto.imagenes].sort((a, b) => a.orden - b.orden),
     caracteristicas: [...producto.caracteristicas].sort((a, b) => a.orden - b.orden),
+    colores: [...(producto.colores ?? [])].sort((a, b) => a.orden - b.orden),
   };
 }
 
@@ -73,7 +75,7 @@ export class ProductoService {
   }
 
   private async crearAsync(payload: ProductoInput): Promise<Producto> {
-    const { imagenes, caracteristicas, ...datos } = payload;
+    const { imagenes, caracteristicas, colores, ...datos } = payload;
     const { data: producto, error } = await this.supabase
       .from(this.tabla)
       .insert(datos)
@@ -83,18 +85,18 @@ export class ProductoService {
       throw error ?? new Error('No se pudo crear el producto.');
     }
 
-    await this.reemplazarListas(producto['id'], imagenes, caracteristicas);
+    await this.reemplazarListas(producto['id'], imagenes, caracteristicas, colores);
     return this.obtenerConRelacionesAsync(producto['id']);
   }
 
   private async actualizarAsync(id: number, payload: ProductoInput): Promise<Producto> {
-    const { imagenes, caracteristicas, ...datos } = payload;
+    const { imagenes, caracteristicas, colores, ...datos } = payload;
     const { error } = await this.supabase.from(this.tabla).update(datos).eq('id', id);
     if (error) {
       throw error;
     }
 
-    await this.reemplazarListas(id, imagenes, caracteristicas);
+    await this.reemplazarListas(id, imagenes, caracteristicas, colores);
     return this.obtenerConRelacionesAsync(id);
   }
 
@@ -102,7 +104,8 @@ export class ProductoService {
   private async reemplazarListas(
     productoId: number,
     imagenes: ProductoImagenInput[],
-    caracteristicas: ProductoCaracteristicaInput[]
+    caracteristicas: ProductoCaracteristicaInput[],
+    colores: ProductoColorInput[]
   ): Promise<void> {
     const { error: errImgDel } = await this.supabase
       .from('producto_imagenes')
@@ -133,6 +136,22 @@ export class ProductoService {
         .insert(caracteristicas.map((c) => ({ ...c, producto_id: productoId })));
       if (errCarIns) {
         throw errCarIns;
+      }
+    }
+
+    const { error: errColDel } = await this.supabase
+      .from('producto_colores')
+      .delete()
+      .eq('producto_id', productoId);
+    if (errColDel) {
+      throw errColDel;
+    }
+    if (colores.length > 0) {
+      const { error: errColIns } = await this.supabase
+        .from('producto_colores')
+        .insert(colores.map((c) => ({ ...c, producto_id: productoId })));
+      if (errColIns) {
+        throw errColIns;
       }
     }
   }

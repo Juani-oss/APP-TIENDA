@@ -25,6 +25,23 @@ export interface ProductoCaracteristicaInput {
   orden: number;
 }
 
+export interface ProductoColor {
+  id: number;
+  nombre: string;
+  color_hex: string | null;
+  imagen_url: string | null;
+  stock: number;
+  orden: number;
+}
+
+export interface ProductoColorInput {
+  nombre: string;
+  color_hex: string | null;
+  imagen_url: string | null;
+  stock: number;
+  orden: number;
+}
+
 export interface Producto {
   id: number;
   nombre: string;
@@ -44,14 +61,16 @@ export interface Producto {
   marca: Marca;
   imagenes: ProductoImagen[];
   caracteristicas: ProductoCaracteristica[];
+  colores: ProductoColor[];
 }
 
 export type ProductoInput = Omit<
   Producto,
-  'id' | 'created_at' | 'categoria' | 'marca' | 'imagenes' | 'caracteristicas'
+  'id' | 'created_at' | 'categoria' | 'marca' | 'imagenes' | 'caracteristicas' | 'colores'
 > & {
   imagenes: ProductoImagenInput[];
   caracteristicas: ProductoCaracteristicaInput[];
+  colores: ProductoColorInput[];
 };
 
 export interface ProductoFiltros {

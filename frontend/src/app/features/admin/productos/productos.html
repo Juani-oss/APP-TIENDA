@@ -156,6 +156,64 @@
         <button type="button" class="secundario" (click)="agregarCaracteristica()">+ Agregar característica</button>
       </div>
 
+      <div class="productos__seccion">
+        <p class="productos__seccion-titulo">Colores disponibles (opcional)</p>
+        <p class="productos__hint">
+          Si cargás colores, el cliente elige uno en la página del producto y cada color
+          maneja su propio stock — útil para algo como estuches de iPhone en varios colores.
+        </p>
+
+        @if (form().colores.length > 0) {
+          <div class="productos__colores">
+            @for (color of form().colores; track $index; let i = $index) {
+              <div class="productos__color-row">
+                <input
+                  type="color"
+                  [ngModel]="color.color_hex"
+                  (ngModelChange)="actualizarColor(i, 'color_hex', $event)"
+                  [name]="'color-hex-' + i"
+                  aria-label="Color"
+                />
+                <input
+                  type="text"
+                  placeholder="Ej: Azul"
+                  [ngModel]="color.nombre"
+                  (ngModelChange)="actualizarColor(i, 'nombre', $event)"
+                  [name]="'color-nombre-' + i"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Stock"
+                  [ngModel]="color.stock"
+                  (ngModelChange)="actualizarColor(i, 'stock', +$event)"
+                  [name]="'color-stock-' + i"
+                />
+
+                @if (color.imagen_url) {
+                  <img class="productos__color-preview" [src]="resolverImagenUrl(color.imagen_url)" alt="" />
+                }
+                <label class="productos__color-foto">
+                  📷
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    (change)="subirImagenColor(i, $event)"
+                  />
+                </label>
+
+                <button type="button" class="peligro" (click)="quitarColor(i)" aria-label="Quitar color">✕</button>
+              </div>
+              @if (subiendoImagenColor() === i) {
+                <p class="productos__subiendo">Subiendo foto del color...</p>
+              }
+            }
+          </div>
+        }
+
+        <button type="button" class="secundario" (click)="agregarColor()">+ Agregar color</button>
+      </div>
+
       <label>
         Categoría
         <select

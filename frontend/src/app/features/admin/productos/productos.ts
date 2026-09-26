@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Categoria } from '../../../core/models/categoria.model';
 import { Marca } from '../../../core/models/marca.model';
-import { Producto, ProductoInput } from '../../../core/models/producto.model';
+import { Producto, ProductoColorInput, ProductoInput } from '../../../core/models/producto.model';
 import { CategoriaService } from '../../../core/services/categoria.service';
 import { MarcaService } from '../../../core/services/marca.service';
 import { ProductoService } from '../../../core/services/producto.service';
@@ -27,6 +27,7 @@ const VACIO: ProductoInput = {
   marca_id: 0,
   imagenes: [],
   caracteristicas: [],
+  colores: [],
 };
 
 @Component({
@@ -55,6 +56,7 @@ export class AdminProductos implements OnInit {
   readonly guardando = signal(false);
   readonly subiendoImagen = signal(false);
   readonly subiendoImagenGaleria = signal(false);
+  readonly subiendoImagenColor = signal<number | null>(null);
 
   ngOnInit(): void {
     this.cargarTodo();
@@ -105,6 +107,16 @@ export class AdminProductos implements OnInit {
         .slice()
         .sort((a, b) => a.orden - b.orden)
         .map((c) => ({ clave: c.clave, valor: c.valor, orden: c.orden })),
+      colores: producto.colores
+        .slice()
+        .sort((a, b) => a.orden - b.orden)
+        .map((c) => ({
+          nombre: c.nombre,
+          color_hex: c.color_hex,
+          imagen_url: c.imagen_url,
+          stock: c.stock,
+          orden: c.orden,
+        })),
     });
     this.mostrarForm.set(true);
   }
@@ -216,6 +228,59 @@ export class AdminProductos implements OnInit {
     }));
   }
 
+  // ---------- Colores (variantes, ej: estuches de iPhone en varios colores) ----------
+
+  agregarColor(): void {
+    this.form.update((actual) => ({
+      ...actual,
+      colores: [
+        ...actual.colores,
+        { nombre: '', color_hex: '#000000', imagen_url: null, stock: 0, orden: actual.colores.length },
+      ],
+    }));
+  }
+
+  actualizarColor<K extends keyof ProductoColorInput>(
+    index: number,
+    campo: K,
+    valor: ProductoColorInput[K]
+  ): void {
+    this.form.update((actual) => ({
+      ...actual,
+      colores: actual.colores.map((c, i) => (i === index ? { ...c, [campo]: valor } : c)),
+    }));
+  }
+
+  subirImagenColor(index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    if (!archivo) {
+      return;
+    }
+
+    this.subiendoImagenColor.set(index);
+    this.error.set(null);
+
+    this.uploadService.subirImagen(archivo).subscribe({
+      next: (res) => {
+        this.actualizarColor(index, 'imagen_url', res.url);
+        this.subiendoImagenColor.set(null);
+      },
+      error: () => {
+        this.error.set('No se pudo subir la foto del color (formato o tamaño no permitido, máx. 5MB).');
+        this.subiendoImagenColor.set(null);
+      },
+    });
+  }
+
+  quitarColor(index: number): void {
+    this.form.update((actual) => ({
+      ...actual,
+      colores: actual.colores.filter((_, i) => i !== index).map((c, i) => ({ ...c, orden: i })),
+    }));
+  }
+
   guardar(): void {
     const datos = this.form();
     if (!datos.nombre.trim() || !datos.categoria_id || !datos.marca_id || datos.precio <= 0) {
@@ -236,6 +301,10 @@ export class AdminProductos implements OnInit {
     }
     if (datos.caracteristicas.some((c) => !c.clave.trim() || !c.valor.trim())) {
       this.error.set('Completá o quitá las características vacías.');
+      return;
+    }
+    if (datos.colores.some((c) => !c.nombre.trim())) {
+      this.error.set('Completá o quitá los colores sin nombre.');
       return;
     }
     if (datos.precio_original != null && datos.precio_original <= datos.precio) {
@@ -275,5 +344,5 @@ export class AdminProductos implements OnInit {
 }
 
 function estructuraVacia(): ProductoInput {
-  return { ...VACIO, imagenes: [], caracteristicas: [] };
+  return { ...VACIO, imagenes: [], caracteristicas: [], colores: [] };
 }

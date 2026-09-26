@@ -60,11 +60,34 @@
         }
       </div>
 
+      @if (colores().length > 0) {
+        <div class="detalle__colores">
+          <span class="detalle__colores-titulo">Color:</span>
+          <div class="detalle__colores-lista">
+            @for (color of colores(); track color.id) {
+              <button
+                type="button"
+                class="detalle__color-swatch"
+                [class.detalle__color-swatch--activo]="color.id === colorSeleccionadoId()"
+                [class.detalle__color-swatch--sin-stock]="color.stock === 0"
+                [style.background]="color.color_hex || '#ccc'"
+                [attr.aria-label]="color.nombre + (color.stock === 0 ? ' (sin stock)' : '')"
+                [attr.title]="color.nombre + (color.stock === 0 ? ' (sin stock)' : '')"
+                (click)="seleccionarColor(color.id)"
+              ></button>
+            }
+          </div>
+          @if (colorSeleccionado(); as c) {
+            <span class="detalle__colores-nombre">{{ c.nombre }}</span>
+          }
+        </div>
+      }
+
       @if (!p.es_afiliado) {
-        @if (p.stock === 0) {
+        @if (stockDisponible() === 0) {
           <p class="detalle__sin-stock">✕ Sin stock disponible</p>
         } @else {
-          <p class="detalle__stock">✓ {{ p.stock }} unidades disponibles</p>
+          <p class="detalle__stock">✓ {{ stockDisponible() }} unidades disponibles</p>
         }
       }
 
@@ -97,7 +120,7 @@
               Ver oferta en Amazon ↗
             </a>
           }
-        } @else if (p.stock > 0) {
+        } @else if (stockDisponible() > 0) {
           <a
             class="detalle__btn detalle__btn--whatsapp"
             [href]="whatsappHref()"

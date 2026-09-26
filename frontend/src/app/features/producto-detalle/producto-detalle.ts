@@ -32,6 +32,25 @@ export class ProductoDetalle {
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
   readonly imagenActual = signal<string | null>(null);
+  readonly colorSeleccionadoId = signal<number | null>(null);
+
+  readonly colores = computed(() => this.producto()?.colores ?? []);
+
+  readonly colorSeleccionado = computed(
+    () => this.colores().find((c) => c.id === this.colorSeleccionadoId()) ?? null
+  );
+
+  /** Sin colores cargados, se usa el stock del producto tal cual (como antes). */
+  readonly stockDisponible = computed(() => {
+    const p = this.producto();
+    if (!p) {
+      return 0;
+    }
+    if (this.colores().length === 0) {
+      return p.stock;
+    }
+    return this.colorSeleccionado()?.stock ?? 0;
+  });
 
   /** % de descuento redondeado, o null si no hay precio original cargado. */
   readonly descuento = computed(() => {
@@ -91,11 +110,25 @@ export class ProductoDetalle {
       this.error.set(null);
       this.producto.set(null);
       this.comentarios.set([]);
+      this.colorSeleccionadoId.set(null);
 
       this.productoService.obtener(productoId).subscribe({
         next: (producto) => {
           this.producto.set(producto);
           this.imagenActual.set(producto.imagen_url);
+
+          // Preseleccionamos un color para que el comprador no tenga que
+          // adivinar que hace falta elegir uno antes de poder comprar:
+          // preferimos el primero con stock, si no hay ninguno con stock
+          // igual mostramos el primero (para que se vea "Sin stock" claro).
+          const colores = producto.colores.slice().sort((a, b) => a.orden - b.orden);
+          const primeroConStock = colores.find((c) => c.stock > 0);
+          const colorInicial = primeroConStock ?? colores[0] ?? null;
+          this.colorSeleccionadoId.set(colorInicial?.id ?? null);
+          if (colorInicial?.imagen_url) {
+            this.imagenActual.set(colorInicial.imagen_url);
+          }
+
           this.cargando.set(false);
         },
         error: () => {
@@ -114,6 +147,14 @@ export class ProductoDetalle {
     this.imagenActual.set(url);
   }
 
+  seleccionarColor(id: number): void {
+    this.colorSeleccionadoId.set(id);
+    const color = this.colores().find((c) => c.id === id);
+    if (color?.imagen_url) {
+      this.imagenActual.set(color.imagen_url);
+    }
+  }
+
   elegirCalificacion(n: number): void {
     this.calificacion.set(n);
     // En pantallas táctiles "mouseleave" no siempre se dispara, así que sin
@@ -126,6 +167,12 @@ export class ProductoDetalle {
     return '★'.repeat(calificacion) + '☆'.repeat(5 - calificacion);
   }
 
+  /** "" si no hay colores cargados, o "(Color: Azul)" si hay uno elegido. */
+  private sufijoColor(): string {
+    const color = this.colorSeleccionado();
+    return color ? ` (Color: ${color.nombre})` : '';
+  }
+
   whatsappHref(): string {
     const p = this.producto();
     if (!p) {
@@ -133,7 +180,7 @@ export class ProductoDetalle {
     }
     const mensaje =
       `¡Hola! Quiero comprar este producto:\n` +
-      `${p.nombre} - ${p.precio.toFixed(2)} USD\n` +
+      `${p.nombre}${this.sufijoColor()} - ${p.precio.toFixed(2)} USD\n` +
       `${window.location.href}`;
     return whatsappHref(mensaje);
   }
@@ -146,7 +193,7 @@ export class ProductoDetalle {
     const mensaje =
       `¡Hola! Quiero comprar este producto en Amazon y que me asesoren antes de comprar` +
       ` para coordinar el envío a Ecuador por el casillero:\n` +
-      `${p.nombre} - ${p.precio.toFixed(2)} USD\n` +
+      `${p.nombre}${this.sufijoColor()} - ${p.precio.toFixed(2)} USD\n` +
       `${window.location.href}`;
     return whatsappHref(mensaje);
   }
