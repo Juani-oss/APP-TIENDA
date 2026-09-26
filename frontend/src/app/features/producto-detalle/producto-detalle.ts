@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, HostListener, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
@@ -87,6 +87,19 @@ export class ProductoDetalle {
     return [...new Set(urls)];
   });
 
+  /**
+   * Igual que galeria(), pero además garantiza que la imagen actual esté
+   * incluida — si es la foto propia de un color, no está en galeria() pero
+   * el lightbox igual tiene que poder navegar hacia/desde ella.
+   */
+  readonly galeriaVisible = computed(() => {
+    const base = this.galeria();
+    const actual = this.imagenActual();
+    return actual && !base.includes(actual) ? [actual, ...base] : base;
+  });
+
+  readonly lightboxAbierto = signal(false);
+
   readonly autor = signal('');
   readonly contenido = signal('');
   readonly calificacion = signal(5);
@@ -152,6 +165,49 @@ export class ProductoDetalle {
     const color = this.colores().find((c) => c.id === id);
     if (color?.imagen_url) {
       this.imagenActual.set(color.imagen_url);
+    }
+  }
+
+  abrirLightbox(): void {
+    if (this.imagenActual()) {
+      this.lightboxAbierto.set(true);
+    }
+  }
+
+  cerrarLightbox(): void {
+    this.lightboxAbierto.set(false);
+  }
+
+  siguienteImagen(): void {
+    this.navegarImagen(1);
+  }
+
+  anteriorImagen(): void {
+    this.navegarImagen(-1);
+  }
+
+  private navegarImagen(direccion: 1 | -1): void {
+    const galeria = this.galeriaVisible();
+    if (galeria.length < 2) {
+      return;
+    }
+    const indiceActual = galeria.indexOf(this.imagenActual() ?? '');
+    const indice = indiceActual === -1 ? 0 : indiceActual;
+    const siguiente = (indice + direccion + galeria.length) % galeria.length;
+    this.imagenActual.set(galeria[siguiente]);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onTecla(event: KeyboardEvent): void {
+    if (!this.lightboxAbierto()) {
+      return;
+    }
+    if (event.key === 'Escape') {
+      this.cerrarLightbox();
+    } else if (event.key === 'ArrowRight') {
+      this.siguienteImagen();
+    } else if (event.key === 'ArrowLeft') {
+      this.anteriorImagen();
     }
   }
 

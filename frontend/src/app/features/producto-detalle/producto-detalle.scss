@@ -28,8 +28,16 @@
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      // contain, no cover: con cover, una foto que no sea exactamente 4:3
+      // se recorta y puede terminar mostrando un pedazo random de la imagen
+      // (por ej. solo el hueco de la cámara de un estuche, bien de cerca).
+      object-fit: contain;
+      padding: 0.85rem;
     }
+  }
+
+  &__imagen-clickable {
+    cursor: zoom-in;
   }
 
   &__miniaturas {
@@ -54,7 +62,8 @@
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      padding: 0.3rem;
     }
 
     &:hover {
@@ -343,6 +352,81 @@
 
     &--error {
       color: var(--color-danger);
+    }
+  }
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+
+  &__imagen {
+    max-width: min(90vw, 900px);
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+  }
+
+  &__cerrar {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  &__flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    &--izq {
+      left: 1rem;
+    }
+
+    &--der {
+      right: 1rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 1rem;
+
+    &__flecha {
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
     }
   }
 }

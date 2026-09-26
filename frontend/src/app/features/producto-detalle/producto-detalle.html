@@ -7,7 +7,12 @@
     <div class="detalle__galeria">
       <div class="detalle__imagen">
         @if (imagenActual()) {
-          <img [src]="resolverImagenUrl(imagenActual())" [alt]="p.nombre" />
+          <img
+            [src]="resolverImagenUrl(imagenActual())"
+            [alt]="p.nombre"
+            class="detalle__imagen-clickable"
+            (click)="abrirLightbox()"
+          />
         } @else {
           <div class="detalle__placeholder">🛍️</div>
         }
@@ -169,6 +174,37 @@
       }
     </div>
   </section>
+
+  @if (lightboxAbierto()) {
+    <div class="lightbox" (click)="cerrarLightbox()">
+      <button type="button" class="lightbox__cerrar" (click)="cerrarLightbox()" aria-label="Cerrar">✕</button>
+
+      @if (galeriaVisible().length > 1) {
+        <button
+          type="button"
+          class="lightbox__flecha lightbox__flecha--izq"
+          (click)="anteriorImagen(); $event.stopPropagation()"
+          aria-label="Imagen anterior"
+        >‹</button>
+      }
+
+      <img
+        [src]="resolverImagenUrl(imagenActual())"
+        [alt]="p.nombre"
+        class="lightbox__imagen"
+        (click)="$event.stopPropagation()"
+      />
+
+      @if (galeriaVisible().length > 1) {
+        <button
+          type="button"
+          class="lightbox__flecha lightbox__flecha--der"
+          (click)="siguienteImagen(); $event.stopPropagation()"
+          aria-label="Imagen siguiente"
+        >›</button>
+      }
+    </div>
+  }
 
   @if (p.descripcion || p.caracteristicas.length > 0) {
     <section class="detalles">
